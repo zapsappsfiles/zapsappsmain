@@ -10,10 +10,11 @@ interface SEOProps {
 
 const SEO: React.FC<SEOProps> = ({
   title = 'ZapsApps | Digital Innovation Studio',
-  description = 'ZapsApps is a digital innovation studio creating powerful, modern solutions. We specialize in web development, digital products, and innovative user experiences.',
+  description = 'ZapsApps is a digital innovation studio creating powerful, modern solutions. We specialize in web development, static websites, digital products, and innovative user experiences.',
   keywords = [
     'digital innovation',
     'web development',
+    'static websites',
     'UI/UX design',
     'digital products',
     'web applications',
@@ -23,7 +24,8 @@ const SEO: React.FC<SEOProps> = ({
     'digital transformation',
     'user experience',
     'innovative design',
-    'digital studio'
+    'digital studio',
+    'NYC web design'
   ],
   image = '/og-image.jpg',
   url = 'https://zapsapps.com'
@@ -94,18 +96,20 @@ const SEO: React.FC<SEOProps> = ({
       ],
       "address": {
         "@type": "PostalAddress",
-        "addressLocality": "New York",
+        "addressLocality": "Manhattan",
         "addressRegion": "NY",
         "addressCountry": "US"
       },
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "customer service",
-        "email": "hello@zapsapps.com",
+        "email": "zapsapps1@gmail.com",
+        "telephone": "718-500-7647",
         "areaServed": "Worldwide"
       },
       "knowsAbout": [
         "Web Development",
+        "Static Websites",
         "Digital Innovation",
         "User Experience Design",
         "Software Development",

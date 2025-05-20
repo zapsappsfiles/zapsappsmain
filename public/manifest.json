@@ -1,13 +1,33 @@
 {
-  "name": "ZapsApps - Modern Web Development Agency",
+  "name": "ZapsApps",
   "short_name": "ZapsApps",
   "description": "ZapsApps is a cutting-edge web development agency specializing in React, TypeScript, and modern web technologies.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#6366f1",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
   "orientation": "portrait",
   "icons": [
+    {
+      "src": "/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
     {
       "src": "/icons/icon-72x72.png",
       "sizes": "72x72",
@@ -35,12 +55,6 @@
     {
       "src": "/icons/icon-152x152.png",
       "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },

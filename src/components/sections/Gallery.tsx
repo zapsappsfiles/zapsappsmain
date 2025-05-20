@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { useTheme } from '../../contexts/ThemeContext';
+import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
@@ -77,8 +76,6 @@ const Gallery: React.FC = () => {
   const [hoverState, setHoverState] = useState<{[key: number]: boolean}>({});
   const galleryRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(galleryRef, { once: true, margin: "-10%" });
-  const { darkMode } = useTheme();
 
   const filteredProjects = selectedCategory === 'All'
     ? galleryItems

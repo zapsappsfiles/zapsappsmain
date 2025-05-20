@@ -1,9 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useTheme } from '../../contexts/ThemeContext';
 
 const Footer: React.FC = () => {
-  const { darkMode } = useTheme();
   const currentYear = new Date().getFullYear();
   
   const socialLinks = [
@@ -88,15 +86,15 @@ const Footer: React.FC = () => {
             <div className="space-y-3">
               <p className="flex items-center text-sm text-accent/80 dark:text-white/70">
                 <i className="ri-map-pin-line mr-3"></i>
-                123 Design Street, Creative City
+                Manhattan, NYC
               </p>
               <p className="flex items-center text-sm text-accent/80 dark:text-white/70">
                 <i className="ri-mail-line mr-3"></i>
-                hello@zapsapps.com
+                zapsapps1@gmail.com
               </p>
               <p className="flex items-center text-sm text-accent/80 dark:text-white/70">
                 <i className="ri-phone-line mr-3"></i>
-                +1 (555) 123-4567
+                718-500-7647
               </p>
             </div>
           </div>
