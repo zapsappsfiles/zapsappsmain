@@ -8,22 +8,26 @@ const WhyUs: React.FC = () => {
     {
       title: "Thoughtful Design",
       description: "We believe in purpose-driven design that solves real problems while maintaining aesthetic integrity.",
-      gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNzM2YTJiMzQtYjQ4Ny00ZDM3LWE4NTAtYjM4YzY2NzM2YzFhMiZjdD1n/3o7btNa0RUYa5E7iiQ/giphy-grayscale.gif",
+      img: "https://picsum.photos/400/400?random=1",
+      alt: "Thoughtful Design placeholder"
     },
     {
       title: "Attention to Detail",
       description: "Every pixel matters. We obsess over the details that others might overlook.",
-      gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjk1YzJmMzgtZjQ4Ny00ZDM3LWE4NTAtYjM4YzY2NzM2YzFhMiZjdD1n/d3mlE7uhX8KFgEmY/giphy-grayscale.gif",
+      img: "https://picsum.photos/400/400?random=2",
+      alt: "Attention to Detail placeholder"
     },
     {
       title: "Collaborative Process",
       description: "We work closely with you as partners, ensuring your vision is realized every step of the way.",
-      gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNzM2YTJiMzQtYjQ4Ny00ZDM3LWE4NTAtYjM4YzY2NzM2YzFhMiZjdD1n/l0IylOPCNkiqOgMyA/giphy-grayscale.gif",
+      img: "https://picsum.photos/400/400?random=3",
+      alt: "Collaborative Process placeholder"
     },
     {
       title: "Technical Excellence",
       description: "Our designs aren't just beautiful, they're built with clean code and optimized performance.",
-      gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNzM2YTJiMzQtYjQ4Ny00ZDM3LWE4NTAtYjM4YzY2NzM2YzFhMiZjdD1n/LmNwrBhejkK9EFP504/giphy-grayscale.gif",
+      img: "https://picsum.photos/400/400?random=4",
+      alt: "Technical Excellence placeholder"
     }
   ];
 
@@ -124,8 +128,8 @@ const WhyUs: React.FC = () => {
                 transition={{ duration: 0.3 }}
               >
                 <motion.img
-                  src={reasons[activeTab].gif}
-                  alt={reasons[activeTab].title}
+                  src={reasons[activeTab].img}
+                  alt={reasons[activeTab].alt}
                   className="w-full h-auto"
                   initial={{ scale: 0.95, opacity: 0.9 }}
                   animate={{ scale: 1, opacity: 1 }}

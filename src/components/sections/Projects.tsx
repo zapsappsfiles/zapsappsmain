@@ -17,32 +17,32 @@ const projects: Project[] = [
     title: 'FN GEO DRILLING',
     category: 'Web • Design • Development • 3D',
     tags: ['UI/UX', 'Frontend', 'React', 'Enterprise'],
-    image: 'https://picsum.photos/id/26/800/600',
-    hoverImage: 'https://picsum.photos/id/65/800/600'
+    image: `https://picsum.photos/600/400?random=${1}`,
+    hoverImage: `https://picsum.photos/600/400?random=${11}`
   },
   {
     id: 2,
     title: 'NEXUS ARCH',
     category: 'Concept • 3D Illustration • Mograph • Video',
     tags: ['Animation', 'Art Direction', 'Three.js', 'GSAP', 'Frontend', 'React'],
-    image: 'https://picsum.photos/id/28/800/600',
-    hoverImage: 'https://picsum.photos/id/42/800/600'
+    image: `https://picsum.photos/600/400?random=${2}`,
+    hoverImage: `https://picsum.photos/600/400?random=${12}`
   },
   {
     id: 3,
     title: 'FLOWER GIRL',
     category: 'Web • Design • Development • 3D',
     tags: ['Character Design', 'WebGL', '3D Animation', 'Portfolio', 'WebGL', '3D', 'GSAP', 'React'],
-    image: 'https://picsum.photos/id/76/800/600',
-    hoverImage: 'https://picsum.photos/id/96/800/600'
+    image: `https://picsum.photos/600/400?random=${3}`,
+    hoverImage: `https://picsum.photos/600/400?random=${13}`
   },
   {
     id: 4,
     title: 'PORTFOLIO',
     category: 'Web • Design • Development • 3D',
     tags: ['VR/AR', 'Interactive', 'Spatial Computing', 'Portfolio', 'WebGL', '3D', 'GSAP', 'Photography', 'React'],
-    image: 'https://picsum.photos/id/77/800/600',
-    hoverImage: 'https://picsum.photos/id/79/800/600'
+    image: `https://picsum.photos/600/400?random=${4}`,
+    hoverImage: `https://picsum.photos/600/400?random=${14}`
   }
 ];
 
@@ -145,6 +145,11 @@ const Projects: React.FC = () => {
                     className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
                     style={{ opacity: 1 }}
                     loading="lazy"
+                    onError={e => {
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null;
+                      target.src = 'https://placehold.co/600x400?text=Image+Unavailable';
+                    }}
                   />
                   
                   {project.hoverImage && (
@@ -156,6 +161,11 @@ const Projects: React.FC = () => {
                         opacity: activeProject === project.id ? 0.9 : 0
                       }}
                       loading="lazy"
+                      onError={e => {
+                        const target = e.target as HTMLImageElement;
+                        target.onerror = null;
+                        target.src = 'https://placehold.co/600x400?text=Image+Unavailable';
+                      }}
                     />
                   )}
                   

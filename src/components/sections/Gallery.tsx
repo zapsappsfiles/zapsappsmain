@@ -11,7 +11,7 @@ const galleryItems = [
     title: 'E-commerce Platform',
     category: 'Web Development',
     description: 'A modern e-commerce solution with seamless checkout and inventory management.',
-    image: 'https://picsum.photos/seed/ecommerce/1200/800',
+    image: `https://picsum.photos/600/400?random=${1}`,
     technologies: ['React', 'Node.js', 'MongoDB'],
     link: '#',
     color: 'bg-blue-500'
@@ -21,7 +21,7 @@ const galleryItems = [
     title: 'Mobile Banking App',
     category: 'UI/UX',
     description: 'Intuitive mobile banking application focused on user experience and security.',
-    image: 'https://picsum.photos/seed/banking/1200/800',
+    image: `https://picsum.photos/600/400?random=${2}`,
     technologies: ['React Native', 'TypeScript', 'Firebase'],
     link: '#',
     color: 'bg-purple-500'
@@ -31,7 +31,7 @@ const galleryItems = [
     title: 'AI-Powered Analytics',
     category: 'Data Science',
     description: 'Advanced analytics platform leveraging machine learning for business insights.',
-    image: 'https://picsum.photos/seed/analytics/1200/800',
+    image: `https://picsum.photos/600/400?random=${3}`,
     technologies: ['Python', 'TensorFlow', 'AWS'],
     link: '#',
     color: 'bg-green-500'
@@ -41,7 +41,7 @@ const galleryItems = [
     title: 'Healthcare Portal',
     category: 'Web Development',
     description: 'Comprehensive healthcare management system for patients and providers.',
-    image: 'https://picsum.photos/seed/healthcare/1200/800',
+    image: `https://picsum.photos/600/400?random=${4}`,
     technologies: ['Vue.js', 'Django', 'PostgreSQL'],
     link: '#',
     color: 'bg-red-500'
@@ -51,7 +51,7 @@ const galleryItems = [
     title: 'Smart Home Dashboard',
     category: 'IoT',
     description: 'Centralized dashboard for managing connected home devices and automation.',
-    image: 'https://picsum.photos/seed/smarthome/1200/800',
+    image: `https://picsum.photos/600/400?random=${5}`,
     technologies: ['React', 'Node.js', 'MQTT'],
     link: '#',
     color: 'bg-yellow-500'
@@ -61,7 +61,7 @@ const galleryItems = [
     title: 'Social Learning Platform',
     category: 'Education',
     description: 'Interactive platform connecting students and educators worldwide.',
-    image: 'https://picsum.photos/seed/education/1200/800',
+    image: `https://picsum.photos/600/400?random=${6}`,
     technologies: ['Next.js', 'GraphQL', 'MongoDB'],
     link: '#',
     color: 'bg-indigo-500'
@@ -235,6 +235,11 @@ const Gallery: React.FC = () => {
                     duration: 0.6, 
                     ease: [0.165, 0.84, 0.44, 1]
                   }}
+                  onError={e => {
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null;
+                    target.src = 'https://placehold.co/600x400?text=Image+Unavailable';
+                  }}
                 />
                 
                 <motion.div 
@@ -308,6 +313,11 @@ const Gallery: React.FC = () => {
                           transition={{ 
                             duration: 0.6, 
                             ease: [0.165, 0.84, 0.44, 1]
+                          }}
+                          onError={e => {
+                            const target = e.target as HTMLImageElement;
+                            target.onerror = null;
+                            target.src = 'https://placehold.co/600x400?text=Image+Unavailable';
                           }}
                         />
                       </div>

@@ -39,8 +39,8 @@ const SEO: React.FC<SEOProps> = ({
   url = 'https://zapsapps.com'
 }) => {
   useEffect(() => {
-    // Update title
-    document.title = title;
+    // Always set title to just the site name
+    document.title = 'ZapsApps';
 
     // Update meta tags
     updateMetaTag('description', description);

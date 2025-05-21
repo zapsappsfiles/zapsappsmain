@@ -83,15 +83,11 @@ const Navbar: React.FC = () => {
   return (
     <>
       {/* Fixed Navigation */}
-      <motion.nav
+      <nav
         ref={navRef}
-        key={darkMode ? 'navbar-dark' : 'navbar-light'}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled ? 'py-3 backdrop-blur-lg' : 'py-6'
         } ${darkMode ? 'text-white' : 'text-black'}`}
-        initial={{ opacity: 0, y: -48 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="container mx-auto px-6 flex justify-between items-center">
           {/* Logo */}
@@ -248,7 +244,7 @@ const Navbar: React.FC = () => {
             </motion.button>
             </div>
         </div>
-      </motion.nav>
+      </nav>
       
       {/* Full-screen Mobile Menu */}
       <AnimatePresence>

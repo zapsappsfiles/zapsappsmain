@@ -2,30 +2,6 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 
-// Better Cat GIFs
-const catGifs = [
-  {
-    id: 1,
-    gif: 'https://media2.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
-    alt: 'Cat coding on laptop'
-  },
-  {
-    id: 2,
-    gif: 'https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif',
-    alt: 'Cat typing on a laptop'
-  },
-  {
-    id: 3,
-    gif: 'https://media2.giphy.com/media/H4DjXQXamtTiIuCcRU/giphy.gif',
-    alt: 'Cat typing fast'
-  },
-  {
-    id: 4,
-    gif: 'https://media3.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif',
-    alt: 'Cat with laptop'
-  }
-];
-
 const About: React.FC = () => {
   const { darkMode } = useTheme();
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -44,25 +20,6 @@ const About: React.FC = () => {
   // Image parallax effects
   const imageOneY = useTransform(scrollYProgress, [0, 1], [0, -100]);
   const imageTwoY = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  
-  // Handle cat click to show easter egg temporarily
-  const handleCatClick = (id: number) => {
-    // Clear any existing timer for this cat
-    if (messageTimers[id]) {
-      clearTimeout(messageTimers[id]);
-    }
-    
-    // Show the message
-    setClickedCats(prev => ({...prev, [id]: true}));
-    
-    // Set a timer to hide the message after 2 seconds
-    const timer = setTimeout(() => {
-      setClickedCats(prev => ({...prev, [id]: false}));
-    }, 2000);
-    
-    // Store the timer reference
-    setMessageTimers(prev => ({...prev, [id]: timer}));
-  };
   
   // Increment creativity counter continuously
   useEffect(() => {
@@ -137,8 +94,8 @@ const About: React.FC = () => {
                   style={{ y: imageOneY }}
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" 
-                    alt="Workspace" 
+                    src="https://picsum.photos/400/600?random=1" 
+                    alt="Workspace placeholder" 
                     className="h-full w-full object-cover"
                   />
                 </motion.div>
@@ -147,8 +104,8 @@ const About: React.FC = () => {
                   style={{ y: imageTwoY }}
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1515187029135-18ee286d815b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" 
-                    alt="Collaboration" 
+                    src="https://picsum.photos/400/600?random=2" 
+                    alt="Collaboration placeholder" 
                     className="h-full w-full object-cover"
                   />
                 </motion.div>
@@ -188,63 +145,6 @@ const About: React.FC = () => {
                     </motion.div>
                   ))}
                 </div>
-              </div>
-            </motion.div>
-            
-            {/* Cat section (easter egg) */}
-            <motion.div
-              className="border-t border-current/10 pt-10"
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8 }}
-            >
-              <p className="text-sm uppercase tracking-wider opacity-50 mb-12">Our Team (Represented by Cats)</p>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-16 sm:gap-12">
-                {catGifs.map((cat) => (
-                  <motion.div
-                    key={cat.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5 }}
-                    className="group cursor-pointer"
-                    onClick={() => handleCatClick(cat.id)}
-                  >
-                    <div className="overflow-hidden mb-6 aspect-[3/4] relative">
-                      <motion.div
-                        className="h-full w-full"
-                        whileHover={{ scale: 1.05 }}
-                        transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
-                      >
-                        <img 
-                          src={cat.gif} 
-                          alt={cat.alt}
-                          className="h-full w-full object-cover"
-                        />
-                        
-                        {clickedCats[cat.id] && (
-                          <motion.div 
-                            className={`absolute inset-0 flex items-center justify-center p-6 ${darkMode ? 'bg-black/80' : 'bg-white/80'}`}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <p className="text-center">
-                              This is a cat because our team is too shy! We prefer to let our work speak for itself.
-                            </p>
-                          </motion.div>
-                        )}
-                      </motion.div>
-                    </div>
-                    
-                    <p className={`text-lg ${darkMode ? 'text-white/60' : 'text-black/60'} mt-1`}>
-                      {clickedCats[cat.id] ? "Meow!" : "Click me"}
-                    </p>
-                  </motion.div>
-                ))}
               </div>
             </motion.div>
             

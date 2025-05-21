@@ -20,7 +20,7 @@ const Work: React.FC = () => {
       id: 1,
       title: 'Monochrome Branding',
       category: 'branding',
-      image: 'https://images.unsplash.com/photo-1541185934-01b600ea069c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+      image: `https://picsum.photos/600/400?random=${1}`,
       client: 'Minimal Co.',
       year: '2023'
     },
@@ -28,7 +28,7 @@ const Work: React.FC = () => {
       id: 2,
       title: 'Editorial Layout',
       category: 'print',
-      image: 'https://images.unsplash.com/photo-1544358315-541fa86514b2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+      image: `https://picsum.photos/600/400?random=${2}`,
       client: 'Paper Magazine',
       year: '2023'
     },
@@ -36,7 +36,7 @@ const Work: React.FC = () => {
       id: 3,
       title: 'Product Photography',
       category: 'photography',
-      image: 'https://images.unsplash.com/photo-1472289065668-ce650ac443d2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+      image: `https://picsum.photos/600/400?random=${3}`,
       client: 'Craft Goods',
       year: '2022'
     },
@@ -44,7 +44,7 @@ const Work: React.FC = () => {
       id: 4,
       title: 'Minimalist Website',
       category: 'web',
-      image: 'https://images.unsplash.com/photo-1483058712412-4245e9b90334?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+      image: `https://picsum.photos/600/400?random=${4}`,
       client: 'Studio Black',
       year: '2022'
     },
@@ -52,7 +52,7 @@ const Work: React.FC = () => {
       id: 5,
       title: 'Typography System',
       category: 'branding',
-      image: 'https://images.unsplash.com/photo-1569721983011-a3db9ea048c2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+      image: `https://picsum.photos/600/400?random=${5}`,
       client: 'Type Press',
       year: '2021'
     },
@@ -60,7 +60,7 @@ const Work: React.FC = () => {
       id: 6,
       title: 'Print Collateral',
       category: 'print',
-      image: 'https://images.unsplash.com/photo-1557425893-550e4e57be1f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+      image: `https://picsum.photos/600/400?random=${6}`,
       client: 'Paper Craft',
       year: '2021'
     }
@@ -178,6 +178,11 @@ const Work: React.FC = () => {
                     transition={{ 
                       duration: 0.6, 
                       ease: [0.165, 0.84, 0.44, 1] 
+                    }}
+                    onError={e => {
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null;
+                      target.src = 'https://placehold.co/600x400?text=Image+Unavailable';
                     }}
                   />
                   

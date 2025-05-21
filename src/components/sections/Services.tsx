@@ -31,7 +31,7 @@ const services: Service[] = [
         'Fast-loading and performance-optimized sites'
       ],
       process: ['Discovery', 'Wireframing', 'Design', 'Development', 'Testing', 'Launch'],
-      imageUrl: 'https://picsum.photos/id/180/800/600'
+      imageUrl: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80'
     }
   },
   {
@@ -48,7 +48,7 @@ const services: Service[] = [
         'Market positioning and competitive analysis'
       ],
       process: ['Research', 'Strategy', 'Concept', 'Refinement', 'Applications', 'Guidelines'],
-      imageUrl: 'https://picsum.photos/id/43/800/600'
+      imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
     }
   },
   {
@@ -65,7 +65,7 @@ const services: Service[] = [
         'Social media graphics and digital assets'
       ],
       process: ['Brief', 'Concepts', 'Design', 'Feedback', 'Refinement', 'Delivery'],
-      imageUrl: 'https://picsum.photos/id/63/800/600'
+      imageUrl: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=800&q=80'
     }
   },
   {
@@ -82,7 +82,7 @@ const services: Service[] = [
         'Performance tracking and continuous improvement'
       ],
       process: ['Audit', 'Research', 'Implementation', 'Content', 'Monitoring', 'Reporting'],
-      imageUrl: 'https://picsum.photos/id/48/800/600'
+      imageUrl: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80'
     }
   }
 ];
@@ -319,11 +319,11 @@ const Services: React.FC = () => {
                               >
                                 <div className="rounded-xl overflow-hidden">
                                   <img 
-                                    src={service.detailedInfo.imageUrl} 
-                                    alt={`${service.title} service`} 
-                                    className="w-full h-auto object-cover" 
-                                    loading="lazy" 
-                                    decoding="async" 
+                                    src={`https://picsum.photos/600/400?random=${service.id}`}
+                                    alt={`${service.title} service placeholder`}
+                                    className="w-full h-auto object-cover"
+                                    loading="lazy"
+                                    decoding="async"
                                   />
                                 </div>
           </motion.div>
