@@ -1,20 +1,18 @@
 # https://www.robotstxt.org/robotstxt.html
+# Allow all crawlers
 User-agent: *
 Allow: /
 
-# Sitemaps
+# Specify sitemap location
 Sitemap: https://zapsapps.com/sitemap.xml
 
 # Crawl-delay
 Crawl-delay: 10
 
-# Disallow patterns
-Disallow: /api/
-Disallow: /admin/
-Disallow: /private/
+# Disallow access to any temporary files
+User-agent: *
+Disallow: /temp_icons/
 Disallow: /*.json$
-Disallow: /*.xml$
-Disallow: /*?*
 
 # Allow patterns
 Allow: /*.js

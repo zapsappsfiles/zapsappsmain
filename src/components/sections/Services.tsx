@@ -1,216 +1,470 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { useTheme } from '../../contexts/ThemeContext';
+import gsap from 'gsap';
 
-const services = [
+interface Service {
+  id: number;
+  title: string;
+  description: string;
+  index: string;
+  tags: string[];
+  detailedInfo: {
+    bulletPoints: string[];
+    process: string[];
+    imageUrl?: string;
+  };
+}
+
+const services: Service[] = [
   {
-    title: 'Static Websites',
-    description: "We specialize in building beautiful, responsive static websites tailored to your needs with three service tiers.",
-    icon: <i className="ri-code-box-line text-3xl" />,
-    color: 'bg-blue-500',
-  },
-  {
+    id: 1,
     title: 'Web Design',
-    description: 'Creating clean, minimal websites with thoughtful interactions that guide users naturally through your content.',
-    icon: <i className="ri-layout-4-line text-3xl" />,
-    color: 'bg-pink-500',
+    description: 'We help brands create digital experiences that connect with their audience through thoughtfully crafted, responsive, and engaging web design.',
+    index: '01',
+    tags: ['UI/UX', 'Frontend', 'Animation', 'Responsive'],
+    detailedInfo: {
+      bulletPoints: [
+        'Custom responsive websites that look great on all devices',
+        'User-centered design approach for better engagement',
+        'Interactive elements and smooth animations',
+        'Fast-loading and performance-optimized sites'
+      ],
+      process: ['Discovery', 'Wireframing', 'Design', 'Development', 'Testing', 'Launch'],
+      imageUrl: 'https://picsum.photos/id/180/800/600'
+    }
   },
   {
-    title: 'Brand Identity',
-    description: "Crafting distinctive visual systems that communicate your brand's essence through typography, color, and voice.",
-    icon: <i className="ri-shape-line text-3xl" />,
-    color: 'bg-purple-500',
+    id: 2,
+    title: 'Branding',
+    description: 'Build a memorable brand identity with our comprehensive branding services, from logo design and visual identity to brand strategy and guidelines.',
+    index: '02',
+    tags: ['Strategy', 'Visual Identity', 'Brand Guidelines', 'Market Research'],
+    detailedInfo: {
+      bulletPoints: [
+        'Logo design and visual identity development',
+        'Brand voice and messaging strategy',
+        'Brand guidelines and style documentation',
+        'Market positioning and competitive analysis'
+      ],
+      process: ['Research', 'Strategy', 'Concept', 'Refinement', 'Applications', 'Guidelines'],
+      imageUrl: 'https://picsum.photos/id/43/800/600'
+    }
   },
   {
-    title: 'Digital Products',
-    description: 'Designing intuitive interfaces and experiences for apps, platforms, and digital tools that solve real problems.',
-    icon: <i className="ri-apps-2-line text-3xl" />,
-    color: 'bg-red-500',
+    id: 3,
+    title: 'Graphic Design',
+    description: 'From digital illustrations to print materials, our graphic design services bring your ideas to life with creative and impactful visual solutions.',
+    index: '03',
+    tags: ['Illustration', 'Typography', 'Print', 'Digital'],
+    detailedInfo: {
+      bulletPoints: [
+        'Digital and print illustration',
+        'Typography and layout design',
+        'Marketing materials and promotional content',
+        'Social media graphics and digital assets'
+      ],
+      process: ['Brief', 'Concepts', 'Design', 'Feedback', 'Refinement', 'Delivery'],
+      imageUrl: 'https://picsum.photos/id/63/800/600'
+    }
   },
   {
+    id: 4,
     title: 'SEO Optimization',
-    description: 'Boosting your online visibility with proven SEO strategies that drive traffic and improve rankings.',
-    icon: <i className="ri-search-line text-3xl" />,
-    color: 'bg-green-500',
-  },
-  {
-    title: 'Custom Development',
-    description: 'Building tailor-made solutions from scratch with your unique requirements and business goals in mind.',
-    icon: <i className="ri-code-s-slash-line text-3xl" />,
-    color: 'bg-yellow-500',
-  },
-];
-
-// Service tiers for static websites
-const serviceTiers = [
-  {
-    name: 'Regular',
-    description: 'Perfect for portfolios and simple showcases',
-    features: [
-      'Single page design',
-      'Responsive layout',
-      'Basic SEO setup',
-      'Custom branding',
-      'Contact form',
-    ],
-    color: 'bg-blue-500',
-    bestFor: 'Ideal for individual portfolios, basic landing pages, and small businesses just getting started online.'
-  },
-  {
-    name: 'Premium',
-    description: 'For businesses needing more comprehensive web presence',
-    features: [
-      'Up to 5 pages',
-      'Advanced responsive design',
-      'Enhanced SEO optimization',
-      'Custom animations',
-      'Contact form with validation',
-      'Social media integration'
-    ],
-    color: 'bg-purple-500',
-    bestFor: 'Great for small to medium businesses requiring multiple pages to showcase services, team, and more content.'
-  },
-  {
-    name: 'Ultra',
-    description: 'Complete web solution for maximum impact',
-    features: [
-      'Multiple pages (6+)',
-      'Advanced animations',
-      'Comprehensive SEO strategy',
-      'Performance optimization',
-      'Enhanced user interactions',
-      'Custom illustrations/graphics',
-      'Content strategy assistance'
-    ],
-    color: 'bg-pink-500',
-    bestFor: 'Perfect for established businesses and organizations needing a sophisticated web presence with all the bells and whistles.'
+    description: 'Improve your website\'s visibility and ranking on search engines through our comprehensive SEO services, driving more organic traffic to your business.',
+    index: '04',
+    tags: ['Keyword Research', 'On-Page SEO', 'Content Strategy', 'Analytics'],
+    detailedInfo: {
+      bulletPoints: [
+        'Comprehensive keyword research and analysis',
+        'On-page SEO optimization and technical audits',
+        'Content strategy development for search visibility',
+        'Performance tracking and continuous improvement'
+      ],
+      process: ['Audit', 'Research', 'Implementation', 'Content', 'Monitoring', 'Reporting'],
+      imageUrl: 'https://picsum.photos/id/48/800/600'
+    }
   }
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.7,
-      ease: 'easeOut',
-      staggerChildren: 0.13,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 40, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: 'easeOut' } },
-};
-
 const Services: React.FC = () => {
+  const { darkMode } = useTheme();
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [activeService, setActiveService] = useState<number | null>(null);
+  const [expandedService, setExpandedService] = useState<number | null>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+  
+  // Text parallax effect
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const descriptionY = useTransform(scrollYProgress, [0, 1], [0, -20]);
+  
+  // Initialize GSAP animations
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    
+    const serviceItems = document.querySelectorAll('.service-item');
+    gsap.fromTo(
+      serviceItems, 
+      { y: 50, opacity: 0 },
+      { 
+        y: 0, 
+        opacity: 1, 
+        stagger: 0.1, 
+        duration: 0.8,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top 70%",
+          end: "top 40%",
+          scrub: 1,
+        }
+      }
+    );
+  }, []);
+  
+  // Handle service hover
+  const handleServiceHover = (id: number) => {
+    setActiveService(id);
+  };
+  
+  // Handle service leave
+  const handleServiceLeave = () => {
+    setActiveService(null);
+  };
+
+  // Handle service click
+  const handleServiceClick = (id: number) => {
+    if (expandedService === id) {
+      setExpandedService(null);
+    } else {
+      setExpandedService(id);
+    }
+  };
+
   return (
-    <section id="services" className="py-24 bg-paper dark:bg-dark">
-      <motion.div
-        className="container mx-auto px-4"
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-      >
-        <div className="max-w-xl mx-auto text-center mb-16">
-          <span className="font-mono text-sm uppercase tracking-widest text-accent block mb-4 dark:text-white/80">Our Services</span>
-          <h2 className="heading text-ink dark:text-white">We craft thoughtful design solutions</h2>
-          <p className="text-accent max-w-lg mx-auto dark:text-white/70">
-            Focused on simplicity and function, we believe in letting the content breathe
-            and creating designs that stand the test of time.
-          </p>
-        </div>
-        
-        {/* Main Services */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {services.map((service, index) => (
-            <motion.div
-              key={service.title}
-              className="group relative bg-white dark:bg-dark/80 border border-ink/10 dark:border-white/10 rounded-xl p-8 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 flex flex-col items-start gap-4"
-              style={{ minHeight: 260 }}
-              variants={cardVariants}
-            >
-              <div className={`mb-4 w-12 h-12 flex items-center justify-center rounded-full shadow-lg ${service.color} text-white group-hover:scale-110 transition-transform`}>{service.icon}</div>
-              <h3 className="font-semibold text-lg mb-2 text-ink dark:text-white group-hover:text-accent dark:group-hover:text-white transition-colors">{service.title}</h3>
-              <p className="text-ink/70 dark:text-white/70 text-base">{service.description}</p>
-            </motion.div>
-          ))}
-        </div>
-        
-        {/* Website Service Tiers */}
-        <div className="mt-24 max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl font-semibold mb-6 text-ink dark:text-white">Our Website Packages</h3>
-            <p className="text-accent dark:text-white/70 max-w-2xl mx-auto">
-              We offer three tiers of static website services to match your needs and budget. 
-              Each includes custom design, responsive layouts, and our commitment to quality.
-            </p>
+    <section 
+      id="services" 
+      ref={sectionRef}
+      className={`min-h-screen py-24 md:py-32 overflow-hidden ${
+        darkMode ? 'bg-black text-white' : 'bg-white text-black'
+      }`}
+    >
+      {/* Background glow effect for expanded service */}
+      <AnimatePresence>
+        {expandedService !== null && (
+        <motion.div
+            className={`fixed inset-0 z-0 pointer-events-none ${
+              darkMode 
+                ? 'bg-blue-900/[0.02]' 
+                : 'bg-blue-100/[0.08]'
+            }`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          />
+        )}
+      </AnimatePresence>
+
+      <div className="container mx-auto px-6 md:px-8 relative z-10">
+        <div className="flex flex-col lg:flex-row items-start">
+          {/* Section heading */}
+          <div className="flex items-start lg:w-1/3 mb-16 lg:mb-0 lg:sticky lg:top-32 z-10">
+            <motion.div style={{ y: titleY }}>
+              <div className="flex items-center mb-6">
+                <span className="text-xl opacity-50 mr-4">02</span>
+                <div className={`w-12 h-px ${darkMode ? 'bg-white/30' : 'bg-black/30'}`}></div>
+              </div>
+              <motion.h2 
+                className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tighter mb-8 leading-[0.9]"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                Our
+                <br />
+                Services
+              </motion.h2>
+              <motion.p 
+                className="text-lg max-w-sm opacity-70"
+                style={{ y: descriptionY }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                We offer a range of design and development services to help your business stand out in the digital landscape.
+              </motion.p>
+        </motion.div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-            {/* Connecting line between tiers */}
-            <div className="absolute top-16 left-0 w-full h-px bg-ink/10 dark:bg-white/10 hidden md:block"></div>
-            
-            {serviceTiers.map((tier, index) => (
-              <motion.div
-                key={tier.name}
-                className={`relative bg-white dark:bg-dark-surface border border-ink/10 dark:border-white/10 rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${index === 1 ? 'md:-mt-4' : ''}`}
-                variants={cardVariants}
-                whileHover={{ y: -6, transition: { duration: 0.3 } }}
-              >
-                {index === 1 && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-accent text-white text-xs uppercase font-mono tracking-widest py-1 px-3 rounded-full">
-                    Popular
-                  </div>
-                )}
-                <div className={`${tier.color} py-6 px-6`}>
-                  <h4 className="text-2xl font-mono uppercase tracking-wider font-bold text-white mb-2">{tier.name}</h4>
-                  <p className="text-white/90 text-sm">{tier.description}</p>
-                </div>
-                <div className="p-6">
-                  <ul className="space-y-4 mb-8 min-h-[300px]">
-                    {tier.features.map((feature, i) => (
-                      <motion.li 
-                        key={i} 
-                        className="flex items-start gap-3 text-ink dark:text-white/90"
+          {/* Services list */}
+          <div className="lg:w-2/3 lg:pl-12">
+            <div className="space-y-20 mt-6">
+          {services.map((service) => (
+            <motion.div
+                  key={service.id}
+                  className={`service-item ${
+                    expandedService === service.id 
+                      ? darkMode 
+                        ? 'relative z-10'
+                        : 'relative z-10' 
+                      : ''
+                  }`}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.8 }}
+                  onMouseEnter={() => handleServiceHover(service.id)}
+                  onMouseLeave={handleServiceLeave}
+                >
+                  <motion.div 
+                    className={`cursor-pointer border-t ${darkMode ? 'border-white/10' : 'border-black/10'} pt-10 pb-8 relative group`}
+                    whileHover={{ x: 20 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ duration: 0.3 }}
+                    onClick={() => handleServiceClick(service.id)}
+                  >
+                    <span className="text-sm opacity-50 mb-2 block">
+                      {service.index}
+                    </span>
+                    <div className="flex flex-col md:flex-row md:items-start md:justify-between">
+                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight mb-6 md:mb-0">
+                        {service.title}
+                        <motion.span 
+                          className="ml-2 inline-block text-base align-middle opacity-50"
+                          animate={{ 
+                            rotate: expandedService === service.id ? 180 : 0
+                          }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {expandedService === service.id ? '−' : '+'}
+                        </motion.span>
+                      </h3>
+                      
+                      <motion.span 
+                        className={`hidden md:inline-block ${darkMode ? 'text-white/50' : 'text-black/50'}`}
                         initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 * i, duration: 0.3 }}
-                        viewport={{ once: true }}
-                      >
-                        <span className={`flex-shrink-0 mt-1 text-lg ${tier.color.replace('bg-', 'text-')}`}>
-                          <i className="ri-check-line"></i>
-                        </span>
-                        <span>{feature}</span>
-                      </motion.li>
-                    ))}
-                  </ul>
-                  <div className="pt-4 border-t border-ink/10 dark:border-white/10">
-                    <p className="text-sm text-ink/70 dark:text-white/70">{tier.bestFor}</p>
-                    <motion.a
-                      href="#contact"
-                      className={`mt-6 inline-block py-3 px-6 rounded-lg text-white ${tier.color} text-sm font-medium tracking-wide transition-all duration-300 hover:shadow-lg w-full text-center`}
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      Get Started
-                    </motion.a>
-                  </div>
+                        animate={{ 
+                          opacity: activeService === service.id ? 1 : 0,
+                          x: activeService === service.id ? 0 : -10
+                        }}
+              transition={{ duration: 0.3 }}
+            >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M5 12h14"></path>
+                          <path d="m12 5 7 7-7 7"></path>
+                        </svg>
+                      </motion.span>
                 </div>
+                
+                    <div className="mt-6">
+                      <p className={`text-lg max-w-xl ${darkMode ? 'text-white/70' : 'text-black/70'}`}>
+                        {service.description}
+                      </p>
+                      
+                      <div className="flex flex-wrap gap-2 mt-6">
+                        {service.tags.map((tag, index) => (
+                          <span 
+                            key={index}
+                            className={`inline-block px-3 py-1 text-xs rounded-full ${
+                              darkMode 
+                                ? 'bg-white/10' 
+                                : 'bg-black/5'
+                            }`}
+                          >
+                            {tag}
+                        </span>
+                    ))}
+                </div>
+              </div>
+        </motion.div>
+        
+                  {/* Expanded service detail card */}
+                  <AnimatePresence>
+                    {expandedService === service.id && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0, y: -20 }}
+                        animate={{ opacity: 1, height: "auto", y: 0 }}
+                        exit={{ opacity: 0, height: 0, y: -20 }}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                        className={`mt-4 mb-8 rounded-xl overflow-hidden border-t ${
+                          darkMode 
+                            ? 'bg-transparent border-white/10' 
+                            : 'bg-transparent border-black/10'
+                        }`}
+                      >
+                        <div className="pt-8">
+                          <div className="flex flex-col md:flex-row gap-8">
+                            {/* Left column - Image */}
+                            {service.detailedInfo.imageUrl && (
+          <motion.div
+                                className="md:w-1/2"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.2, duration: 0.4 }}
+                              >
+                                <div className="rounded-xl overflow-hidden">
+                                  <img 
+                                    src={service.detailedInfo.imageUrl} 
+                                    alt={`${service.title} service`} 
+                                    className="w-full h-auto object-cover" 
+                                    loading="lazy" 
+                                    decoding="async" 
+                                  />
+                                </div>
+          </motion.div>
+                            )}
+          
+                            {/* Right column - Content */}
+          <motion.div
+                              className="md:w-1/2"
+                              initial={{ opacity: 0, x: 20 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: 0.3, duration: 0.4 }}
+                            >
+                              <h4 className="text-2xl font-medium mb-4 tracking-tight">What we offer</h4>
+                              <ul className="space-y-2 mb-8">
+                                {service.detailedInfo.bulletPoints.map((point, idx) => (
+                                  <motion.li 
+                                    key={idx} 
+                                    className="flex items-start"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.3 + (idx * 0.1), duration: 0.3 }}
+                                  >
+                                    <span className={`mr-2 mt-1 flex-shrink-0 ${darkMode ? 'text-white/50' : 'text-black/50'}`}>
+                                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5 12H19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                      </svg>
+                                    </span>
+                                    <span className="opacity-80">{point}</span>
+                                  </motion.li>
+                                ))}
+                              </ul>
+                              
+                              <h4 className="text-2xl font-medium mb-4 tracking-tight">Our Process</h4>
+                              <div className="flex flex-wrap gap-3 mb-6">
+                                {service.detailedInfo.process.map((step, idx) => (
+              <motion.div
+                key={idx}
+                                    className={`px-4 py-2 ${
+                                      darkMode 
+                                        ? 'border-b border-white/10' 
+                                        : 'border-b border-black/10'
+                                    }`}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.4 + (idx * 0.1), duration: 0.3 }}
+                                  >
+                                    <span className="text-sm font-medium mr-2 opacity-50">{idx + 1}.</span>
+                                    <span>{step}</span>
               </motion.div>
             ))}
-          </div>
-          
-          <div className="mt-12 text-center">
-            <p className="text-ink/70 dark:text-white/70 text-sm">
-              All packages include custom design, branding, and responsive layouts. 
-              <br />Contact us to discuss your specific requirements and get a tailored quote.
-            </p>
+                              </div>
+                              
+                              <motion.button
+                                className={`inline-flex items-center px-5 py-2 rounded-full text-sm mt-4 ${
+                                  darkMode 
+                                    ? 'bg-white text-black hover:bg-white/90' 
+                                    : 'bg-black text-white hover:bg-black/90'
+                                } transition-colors`}
+                                whileHover={{ scale: 1.05 }}
+                                transition={{ 
+                                  duration: 0.2,
+                                  delay: 0.6,
+                                  when: "beforeChildren"
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                                }}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                              >
+                                Request a Quote
+                                <svg 
+                                  xmlns="http://www.w3.org/2000/svg" 
+                                  width="16" 
+                                  height="16" 
+                                  viewBox="0 0 24 24" 
+                                  fill="none" 
+                                  stroke="currentColor" 
+                                  strokeWidth="2" 
+                                  strokeLinecap="round" 
+                                  strokeLinejoin="round"
+                                  className="ml-2"
+                                >
+                                  <path d="M5 12h14"></path>
+                                  <path d="m12 5 7 7-7 7"></path>
+                                </svg>
+                              </motion.button>
+          </motion.div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+        </div>
+        
+            {/* CTA */}
+        <motion.div
+              className="mt-20 pt-10 border-t border-current/10"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+        >
+          <motion.a
+            href="#contact"
+                className={`inline-flex items-center px-8 py-4 rounded-full text-lg ${
+                  darkMode 
+                    ? 'bg-white text-black hover:bg-white/90' 
+                    : 'bg-black text-white hover:bg-black/90'
+                } transition-colors`}
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              >
+                Discuss Your Project
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="20" 
+                  height="20" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                  className="ml-2"
+                >
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+          </motion.a>
+        </motion.div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };

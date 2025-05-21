@@ -1,215 +1,321 @@
 import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
-import emailjs from '@emailjs/browser';
-import Toast, { ToastType } from '../ui/Toast';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { useTheme } from '../../contexts/ThemeContext';
+// import emailjs from 'emailjs-com'; // Uncomment this if you want to use EmailJS
 
 const Contact: React.FC = () => {
-  const [submitting, setSubmitting] = useState(false);
-  const [toast, setToast] = useState<{ show: boolean; message: string; type: ToastType }>({ 
-    show: false, 
+  const { darkMode } = useTheme();
+  const sectionRef = useRef<HTMLElement>(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
     message: '', 
-    type: 'success' 
+    goal: '',
+    services: []
   });
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formRef.current) return;
-
-    setSubmitting(true);
-
-    emailjs.sendForm(
-      'service_qtp74ol',
-      'template_tabtwx2',
-      formRef.current,
-      'qPJ_GqvkgBMxA2opO'
-    )
-      .then((result) => {
-        console.log('Email successfully sent!', result.text);
-        setSubmitting(false);
-        setToast({
-          show: true,
-          message: 'Your message has been sent successfully! We\'ll be in touch soon.',
-          type: 'success'
-        });
-        if (formRef.current) formRef.current.reset();
-      })
-      .catch((error) => {
-        console.error('Failed to send email:', error);
-        setSubmitting(false);
-        setToast({
-          show: true,
-          message: 'Sorry, there was an error sending your message. Please try again.',
-          type: 'error'
-        });
-      });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
+  
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+  
+  // Parallax effect for heading
+  const titleY = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  const closeToast = () => {
-    setToast(prev => ({ ...prev, show: false }));
+    // To implement EmailJS, uncomment this block and provide your service, template and user IDs
+    // try {
+    //   await emailjs.send(
+    //     'YOUR_SERVICE_ID',
+    //     'YOUR_TEMPLATE_ID',
+    //     {
+    //       name: formData.name,
+    //       email: formData.email,
+    //       goal: formData.goal,
+    //       message: formData.message,
+    //     },
+    //     'YOUR_USER_ID'
+    //   );
+    //   setSubmitSuccess(true);
+    // } catch (error) {
+    //   console.error('Failed to send email:', error);
+    // }
+    
+    // Simulate form submission for now
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    setIsSubmitting(false);
+    setSubmitSuccess(true);
+    setFormData({
+      name: '',
+      email: '',
+      message: '',
+      goal: '',
+      services: []
+    });
+    
+    // Reset success message after 3 seconds
+    setTimeout(() => {
+      setSubmitSuccess(false);
+    }, 3000);
   };
 
   return (
-    <section id="contact" className="py-24 bg-paper dark:bg-dark">
-      <div className="container mx-auto px-4">
-        <div className="max-w-3xl mx-auto relative">
-          {/* Removed decorative elements */}
-          
+    <section 
+      id="contact" 
+      ref={sectionRef}
+      className={`py-32 md:py-40 ${
+        darkMode ? 'bg-black text-white' : 'bg-white text-black'
+      }`}
+    >
+      <div className="container mx-auto px-6 md:px-8">
+        <div className="flex flex-col lg:flex-row gap-16 md:gap-24 items-start">
+          {/* Left column */}
+          <div className="lg:w-1/2 lg:sticky lg:top-32">
+            <motion.div style={{ y: titleY }}>
+              <div className="flex items-center mb-6">
+                <span className="text-xl opacity-50 mr-4">05</span>
+                <div className={`w-12 h-px ${darkMode ? 'bg-white/30' : 'bg-black/30'}`}></div>
+              </div>
+              <motion.h2 
+                className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-none"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                Let's work
+                <br />together!
+              </motion.h2>
+              
+              <motion.p 
+                className="text-xl opacity-70 max-w-md mt-10 mb-16"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                Is your big idea ready to go wild? We're here to help you turn it into 
+                something extraordinary.
+              </motion.p>
+              
+              {/* Contact information */}
+              <div className="space-y-8">
           <motion.div 
-            className="text-left mb-16"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-          >
-            <span className="font-mono text-xs uppercase tracking-widest text-accent inline-block mb-4 pb-1 border-b border-accent/30 dark:text-white dark:border-white/20">
-              Contact Us
-            </span>
-            <h2 className="text-3xl md:text-4xl font-serif mb-6 text-ink dark:text-white">Let's create something together</h2>
-            <p className="text-ink max-w-xl dark:text-white/80">
-              Have a project in mind? We're ready to collaborate and bring your vision to life.
-            </p>
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                >
+                  <h3 className="text-sm font-light uppercase tracking-wider opacity-50 mb-4">Email us directly</h3>
+                  <div className="space-y-3">
+                    <p className={`text-base ${darkMode ? 'text-white/50' : 'text-black/50'}`}>
+                      New business
+                    </p>
+                    <motion.a 
+                      href="mailto:zapsapps1@gmail.com" 
+                      className="text-xl block"
+                      whileHover={{ x: 5 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      zapsapps1@gmail.com
+                    </motion.a>
+                  </div>
           </motion.div>
 
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  <h3 className="text-sm font-light uppercase tracking-wider opacity-50 mb-4">Follow us</h3>
+                  <div className="flex space-x-6">
+                    {['Twitter', 'Instagram', 'LinkedIn'].map((social, index) => (
+                      <motion.a 
+                        key={social} 
+                        href="#" 
+                        className="inline-block"
+                        whileHover={{ y: -5 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {social}
+                      </motion.a>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+          
+          {/* Right column - Contact form */}
+          <div className="lg:w-1/2">
           <motion.form 
-            ref={formRef}
-            className="space-y-8"
             onSubmit={handleSubmit}
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+              className="space-y-10"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+              {/* Name input */}
               <div className="space-y-2">
-                <label htmlFor="user_name" className="block text-xs font-mono uppercase tracking-wider text-ink/70 mb-2 dark:text-white/70">
-                  Name
+                <label 
+                  htmlFor="name" 
+                  className="text-sm uppercase tracking-wider opacity-50"
+                >
+                  Your name
                 </label>
                 <input
                   type="text"
-                  id="user_name"
-                  name="user_name"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
                   required
-                  className="w-full border-b border-dark/10 bg-transparent px-0 py-2 focus:border-accent/50 dark:focus:border-white/50 focus:outline-none focus:ring-0 transition-colors duration-300 dark:border-white/20 dark:text-white"
-                  placeholder="Your name"
+                  className={`w-full bg-transparent border-b-2 ${
+                    darkMode ? 'border-white/20 focus:border-white' : 'border-black/20 focus:border-black'
+                  } py-4 outline-none transition-colors`}
+                  placeholder="John Doe"
                 />
               </div>
               
+              {/* Email input */}
               <div className="space-y-2">
-                <label htmlFor="user_email" className="block text-xs font-mono uppercase tracking-wider text-ink/70 mb-2 dark:text-white/70">
-                  Email
+                <label 
+                  htmlFor="email" 
+                  className="text-sm uppercase tracking-wider opacity-50"
+                >
+                  Email address
                 </label>
                 <input
                   type="email"
-                  id="user_email"
-                  name="user_email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   required
-                  className="w-full border-b border-dark/10 bg-transparent px-0 py-2 focus:border-accent/50 dark:focus:border-white/50 focus:outline-none focus:ring-0 transition-colors duration-300 dark:border-white/20 dark:text-white"
-                  placeholder="Your email"
+                  className={`w-full bg-transparent border-b-2 ${
+                    darkMode ? 'border-white/20 focus:border-white' : 'border-black/20 focus:border-black'
+                  } py-4 outline-none transition-colors`}
+                  placeholder="john@example.com"
                 />
-              </div>
             </div>
 
+              {/* Project Goal input (replacing Budget selection) */}
             <div className="space-y-2">
-              <label htmlFor="subject" className="block text-xs font-mono uppercase tracking-wider text-ink/70 mb-2 dark:text-white/70">
-                Subject
+                <label 
+                  htmlFor="goal" 
+                  className="text-sm uppercase tracking-wider opacity-50"
+                >
+                  Project goal
               </label>
               <input
                 type="text"
-                id="subject"
-                name="subject"
-                required
-                className="w-full border-b border-dark/10 bg-transparent px-0 py-2 focus:border-accent/50 dark:focus:border-white/50 focus:outline-none focus:ring-0 transition-colors duration-300 dark:border-white/20 dark:text-white"
-                placeholder="Project inquiry"
+                  id="goal"
+                  name="goal"
+                  value={formData.goal}
+                  onChange={handleInputChange}
+                  className={`w-full bg-transparent border-b-2 ${
+                    darkMode ? 'border-white/20 focus:border-white' : 'border-black/20 focus:border-black'
+                  } py-4 outline-none transition-colors`}
+                  placeholder="What are you trying to achieve with this project?"
               />
             </div>
 
+              {/* Message textarea */}
             <div className="space-y-2">
-              <label htmlFor="message" className="block text-xs font-mono uppercase tracking-wider text-ink/70 mb-2 dark:text-white/70">
-                Message
+                <label 
+                  htmlFor="message" 
+                  className="text-sm uppercase tracking-wider opacity-50"
+                >
+                  Tell us about your project
               </label>
               <textarea
                 id="message"
                 name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
                 required
-                rows={4}
-                className="w-full border-b border-dark/10 bg-transparent px-0 py-2 focus:border-accent/50 dark:focus:border-white/50 focus:outline-none focus:ring-0 transition-colors duration-300 dark:border-white/20 dark:text-white resize-none"
-                placeholder="Tell us about your project..."
-              ></textarea>
+                  rows={6}
+                  className={`w-full bg-transparent border-b-2 ${
+                    darkMode ? 'border-white/20 focus:border-white' : 'border-black/20 focus:border-black'
+                  } py-4 outline-none transition-colors`}
+                  placeholder="Describe your project and goals..."
+                />
             </div>
 
-            <div className="pt-6">
+              {/* Submit button */}
               <motion.button
                 type="submit"
-                disabled={submitting}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="group relative overflow-hidden bg-dark text-paper font-mono text-xs uppercase tracking-wider px-8 py-4 dark:bg-white dark:text-dark disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:shadow-lg"
+                className={`mt-8 px-10 py-4 rounded-full ${
+                  darkMode 
+                    ? 'bg-white text-black hover:bg-white/90' 
+                    : 'bg-black text-white hover:bg-black/90'
+                } text-lg flex items-center gap-3 transition-colors`}
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+                disabled={isSubmitting}
               >
-                <span className="relative z-10">
-                  {submitting ? 'Sending...' : 'Send Message'}
-                </span>
-                <span className="absolute inset-0 h-full w-0 bg-accent transition-all duration-300 group-hover:w-full"></span>
+                {isSubmitting ? (
+                  <>
+                    <span className="animate-spin inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full"></span>
+                    <span>Sending...</span>
+                  </>
+                ) : submitSuccess ? (
+                  <>
+                    <span>Message sent!</span>
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      width="20" 
+                      height="20" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+              >
+                      <path d="M20 6L9 17l-5-5"></path>
+                    </svg>
+                  </>
+                ) : (
+                  <>
+                    <span>Send Message</span>
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      width="20" 
+                      height="20" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 12h14"></path>
+                      <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                  </>
+                )}
               </motion.button>
-            </div>
           </motion.form>
-
-          {/* NYC Google Map */}
-          <motion.div
-            className="w-full h-56 md:h-72 rounded-xl overflow-hidden border border-ink/10 shadow-sm my-12 dark:border-white/10"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
-            viewport={{ once: true }}
-          >
-            <iframe
-              title="Our Location"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d48373.85425381818!2d-74.0138641751242!3d40.75459248946551!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2590099a8e8f9%3A0xb05de5decd9e30db!2sManhattan%2C%20New%20York%2C%20NY!5e0!3m2!1sen!2sus!4v1717607723962!5m2!1sen!2sus"
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
-          </motion.div>
-
-          <motion.div 
-            className="mt-16 pt-12 border-t border-dark/5 grid grid-cols-1 md:grid-cols-3 gap-8 dark:border-white/10"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            viewport={{ once: true }}
-          >
-            <div>
-              <h3 className="font-serif text-lg mb-4 text-ink dark:text-white">Email</h3>
-              <a href="mailto:zapsapps1@gmail.com" className="text-ink/80 hover:text-ink hover:border-b border-ink/30 transition-all duration-300 dark:text-white/80 dark:hover:text-white dark:border-white/20">
-                zapsapps1@gmail.com
-              </a>
             </div>
-            <div>
-              <h3 className="font-serif text-lg mb-4 text-ink dark:text-white">Phone</h3>
-              <p className="text-ink/80 dark:text-white/80">718-500-7647</p>
-            </div>
-            <div>
-              <h3 className="font-serif text-lg mb-4 text-ink dark:text-white">Location</h3>
-              <address className="not-italic text-ink/80 dark:text-white/80">
-                Manhattan<br />
-                New York City, NY
-              </address>
-            </div>
-          </motion.div>
         </div>
       </div>
-
-      {/* Toast notification */}
-      <Toast 
-        show={toast.show}
-        message={toast.message}
-        type={toast.type}
-        onClose={closeToast}
-        duration={6000}
-      />
     </section>
   );
 };

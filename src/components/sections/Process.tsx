@@ -1,187 +1,156 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { AnimatePresence, motion, useInView } from 'framer-motion';
-import { useTheme } from '../../contexts/ThemeContext';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-gsap.registerPlugin(ScrollTrigger);
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const steps = [
   {
+    number: '01',
     title: 'Discovery',
-    description: 'We listen, research, and understand your needs to set a strong foundation.',
-    gif: 'https://media.giphy.com/media/3oKIPmJonGimU9bI2s/giphy.gif',
-    points: [
-      'In-depth consultation',
-      'Market research & analysis',
-      'User persona development',
-      'Project scope definition',
-    ],
+    description: 'We start by understanding your goals, audience, and project requirements through in-depth consultation.',
+    details: 'This phase involves market research, competitor analysis, user persona development, and establishing project scope to set a strong foundation.',
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
   },
   {
+    number: '02',
     title: 'Design',
-    description: 'We craft minimal, beautiful, and functional solutions tailored to your goals.',
-    gif: 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
-    points: [
-      'Wireframing & prototyping',
-      'Visual design & branding',
-      'Design system creation',
-      'Interactive feedback',
-    ],
+    description: 'We create beautiful, functional design solutions that align with your brand identity and project goals.',
+    details: 'Our design process includes wireframing, prototyping, visual design, user interface development, and iterative feedback to refine the experience.',
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
   },
   {
-    title: 'Build & Launch',
-    description: 'We develop, test, and launch your project with care and precision.',
-    gif: 'https://media.giphy.com/media/13HgwGsXF0aiGY/giphy.gif',
-    points: [
-      'Frontend & backend development',
-      'Performance optimization',
-      'Quality assurance',
-      'Post-launch support',
-    ],
-  },
+    number: '03',
+    title: 'Development',
+    description: 'We build robust, high-performance solutions with careful attention to quality and technical excellence.',
+    details: 'This stage encompasses frontend and backend development, performance optimization, thorough quality assurance, and preparing for a smooth launch.',
+    icon: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+  }
 ];
 
-const Process: React.FC = () => {
-  const [active, setActive] = useState<number | null>(0);
-  const { darkMode } = useTheme();
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const processRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(sectionRef, { once: true, amount: 0.2 });
-
-  // Only use GSAP for the main section animation
-  useEffect(() => {
-    // Store a reference to DOM elements to use in cleanup
-    const processElement = processRef.current;
-    
-    if (processElement && isInView) {
-      // Clear any previous animations to prevent duplicates
-      gsap.killTweensOf(processElement.children);
-      
-      // Animate each step with staggered timing
-      gsap.fromTo(
-        processElement.children,
-        { 
-          opacity: 0, 
-          y: 30,
-          scale: 0.97
-        },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.6,
-          stagger: 0.15,
-          ease: 'power2.out',
-          clearProps: 'all' // Clears the props after animation to allow natural interactions
-        }
-      );
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15
     }
-    
-    return () => {
-      // Clean up any lingering animations using the stored reference
-      if (processElement) {
-        gsap.killTweensOf(processElement.children);
-      }
-    };
-  }, [isInView]);
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { 
+      duration: 0.6, 
+      ease: [0.22, 1, 0.36, 1]
+    } 
+  }
+};
+
+const Process: React.FC = () => {
+  const [expanded, setExpanded] = useState<number | null>(null);
 
   return (
-    <section
-      id="process"
-      ref={sectionRef}
-      className={`py-24 transition-colors duration-300 ${darkMode ? 'bg-dark' : 'bg-paper'}`}
-    >
+    <section id="process" className="py-24 bg-paper dark:bg-dark">
       <div className="container mx-auto px-4">
-        <motion.div 
-          className="max-w-3xl mx-auto"
+        <motion.div
+          className="max-w-3xl mx-auto text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
         >
-          <h2 className={`section-title mb-12 text-center ${darkMode ? 'text-white' : 'text-ink'}`}>How We Work</h2>
-          <div ref={processRef} className="flex flex-col gap-6">
-            {steps.map((step, idx) => (
-              <div
-                key={step.title}
-                className={`rounded-xl border transition-all duration-300 cursor-pointer overflow-hidden
-                  ${darkMode ? 'border-white/10 bg-dark-surface' : 'border-ink/10 bg-white/80'}
-                  ${active === idx ? 'shadow-xl' : 'hover:shadow-lg'}`}
-                onClick={() => setActive(active === idx ? null : idx)}
-              >
-                <div className="flex items-center gap-4 px-6 py-5">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-base transition-colors duration-300
-                    ${active === idx ? (darkMode ? 'bg-white text-dark' : 'bg-ink text-white') : (darkMode ? 'bg-white/10 text-white/70' : 'bg-ink/10 text-ink/70')}`}>
-                    {idx + 1}
+          <span className="font-mono text-xs uppercase tracking-widest text-accent/80 dark:text-white/70 inline-block mb-2">
+            Our Process
+          </span>
+          <h2 className="text-4xl md:text-5xl font-serif mb-4 text-ink dark:text-white">
+            How We Work
+          </h2>
+          <p className="text-accent/70 dark:text-white/60 max-w-xl mx-auto">
+            Our streamlined approach ensures efficient delivery while maintaining the highest quality standards at every stage.
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="max-w-5xl mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          {steps.map((step, index) => (
+            <motion.div
+              key={index}
+              variants={itemVariants}
+              className="mb-12 last:mb-0"
+            >
+              <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start">
+                {/* Step number and line */}
+                <div className="flex-shrink-0 flex md:flex-col items-center md:items-start">
+                  <div className="flex justify-center items-center w-14 h-14 rounded-full bg-white dark:bg-dark-surface border border-accent/20 dark:border-white/10 text-accent dark:text-white font-mono text-lg">
+                    {step.number}
                   </div>
-                  <div className="flex-1">
-                    <div className={`font-semibold text-lg ${darkMode ? 'text-white' : 'text-ink'}`}>{step.title}</div>
-                    <div className={`text-base ${darkMode ? 'text-white/60' : 'text-ink/60'}`}>{step.description}</div>
-                  </div>
-                  <motion.div
-                    animate={{ rotate: active === idx ? 90 : 0 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
-                  >
-                    <svg width="24" height="24" fill="none" stroke={darkMode ? '#fff' : '#222'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="9 18 15 12 9 6" />
-                    </svg>
-                  </motion.div>
-                </div>
-                <AnimatePresence initial={false}>
-                  {active === idx && (
-                    <motion.div
-                      key="details"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ 
-                        duration: 0.4, 
-                        ease: [0.04, 0.62, 0.23, 0.98],
-                        opacity: { duration: 0.25 }
-                      }}
-                      className="px-6 pb-6 flex flex-col md:flex-row gap-6 items-center"
-                    >
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.4, delay: 0.1 }}
-                        className="flex-shrink-0"
-                      >
-                        <img
-                          src={step.gif}
-                          alt={step.title + ' illustration'}
-                          className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg border shadow"
-                          style={{ 
-                            background: darkMode ? '#222' : '#fff',
-                            borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-                          }}
-                          loading="lazy"
-                        />
-                      </motion.div>
-                      <motion.ul 
-                        className="flex-1 grid grid-cols-1 gap-3 mt-4 md:mt-0"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.4, delay: 0.2 }}
-                      >
-                        {step.points.map((point, i) => (
-                          <motion.li 
-                            key={i} 
-                            className={`flex items-center gap-2 text-base ${darkMode ? 'text-white/90' : 'text-ink/90'}`}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.3, delay: 0.2 + (i * 0.08) }}
-                          >
-                            <span className={`inline-block w-2 h-2 rounded-full ${darkMode ? 'bg-white/80' : 'bg-ink/80'}`}></span>
-                            {point}
-                          </motion.li>
-                        ))}
-                      </motion.ul>
-                    </motion.div>
+                  {index < steps.length - 1 && (
+                    <div className="hidden md:block w-px h-full bg-accent/20 dark:bg-white/10 mt-4 ml-7" />
                   )}
-                </AnimatePresence>
+                </div>
+                
+                {/* Step content */}
+                <div className="flex-1">
+                  <div 
+                    className="p-6 rounded-lg bg-white dark:bg-dark-surface border border-accent/10 dark:border-white/10 shadow-sm hover:shadow-md transition-all duration-300"
+                    style={{ minHeight: '16rem' }}
+                  >
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center bg-accent/10 dark:bg-white/10 text-accent dark:text-white">
+                        {step.icon}
+                      </div>
+                      <h3 className="text-xl font-serif text-ink dark:text-white">{step.title}</h3>
+                    </div>
+                    
+                    <p className="text-accent/70 dark:text-white/60 mb-6 min-h-[4rem]">
+                      {step.description}
+                    </p>
+                    
+                    <AnimatePresence initial={false}>
+                      {expanded === index ? (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="pt-4 border-t border-accent/10 dark:border-white/10">
+                            <p className="text-accent/80 dark:text-white/70 text-sm">
+                              {step.details}
+                            </p>
+                          </div>
+                        </motion.div>
+                      ) : null}
+                    </AnimatePresence>
+                    
+                    <button
+                      onClick={() => setExpanded(expanded === index ? null : index)}
+                      className="mt-4 inline-flex items-center text-sm text-accent dark:text-white/80 hover:text-accent-dark dark:hover:text-white"
+                    >
+                      <span>{expanded === index ? 'Show less' : 'Learn more'}</span>
+                      <motion.span
+                        animate={{ rotate: expanded === index ? 180 : 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="ml-1"
+                      >
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </motion.span>
+                    </button>
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>

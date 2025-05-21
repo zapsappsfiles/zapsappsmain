@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
 
+// Usage: <SEO title="Page Title" description="Page description for SEO." />
+// You can pass unique title/description/keywords/image/url per page or section.
+
 interface SEOProps {
   title?: string;
   description?: string;
@@ -9,23 +12,28 @@ interface SEOProps {
 }
 
 const SEO: React.FC<SEOProps> = ({
-  title = 'ZapsApps | Digital Innovation Studio',
-  description = 'ZapsApps is a digital innovation studio creating powerful, modern solutions. We specialize in web development, static websites, digital products, and innovative user experiences.',
+  title = 'ZapsApps',
+  description = 'ZapsApps is a student-founded startup specializing in web design, development, branding, and SEO in New York City. We create modern digital solutions with a focus on responsive design and user experience.',
   keywords = [
-    'digital innovation',
-    'web development',
-    'static websites',
-    'UI/UX design',
-    'digital products',
-    'web applications',
-    'modern design',
-    'tech solutions',
-    'software development',
-    'digital transformation',
-    'user experience',
-    'innovative design',
-    'digital studio',
-    'NYC web design'
+    'web design NYC',
+    'web development New York',
+    'website design Manhattan',
+    'NYC web design company',
+    'New York web developer',
+    'branding services NYC',
+    'SEO optimization New York',
+    'responsive web design',
+    'UI/UX design NYC',
+    'digital branding',
+    'student startup NYC',
+    'graphic design services',
+    'web design portfolio',
+    'Manhattan web developer',
+    'affordable web design NYC',
+    'professional website development',
+    'mobile-friendly websites',
+    'modern web applications',
+    'ecommerce website development'
   ],
   image = '/og-image.jpg',
   url = 'https://zapsapps.com'
@@ -83,7 +91,7 @@ const SEO: React.FC<SEOProps> = ({
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "ZapsApps",
-      "alternateName": "ZapsApps Digital Innovation Studio",
+      "alternateName": "ZapsApps",
       "description": description,
       "url": url,
       "logo": `${url}/logo.png`,
@@ -108,13 +116,15 @@ const SEO: React.FC<SEOProps> = ({
         "areaServed": "Worldwide"
       },
       "knowsAbout": [
+        "Web Design",
         "Web Development",
-        "Static Websites",
-        "Digital Innovation",
+        "Responsive Design",
         "User Experience Design",
-        "Software Development",
-        "Digital Transformation",
-        "Modern Web Applications"
+        "Branding",
+        "SEO Optimization",
+        "Graphic Design",
+        "Digital Solutions",
+        "New York Web Services"
       ]
     });
 

@@ -12,7 +12,7 @@ interface Project {
 
 const Work: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [hoveredItem, setHoveredItem] = useState<number | null>(null);
   
   // Project data - in real app this would be fetched from a backend
   const projects: Project[] = [
@@ -78,38 +78,79 @@ const Work: React.FC = () => {
     ? projects 
     : projects.filter(project => project.category === selectedCategory);
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.6, 
+        ease: [0.165, 0.84, 0.44, 1] 
+      } 
+    }
+  };
+
   return (
-    <section id="work" className="py-24 bg-light border-t border-b border-gray-200">
+    <section id="work" className="py-24 bg-paper dark:bg-dark">
       <div className="container mx-auto px-4">
-        <div className="max-w-xl mb-16">
-          <span className="font-mono text-sm uppercase tracking-widest text-accent block mb-4">Our Work</span>
-          <h2 className="heading">Selected projects</h2>
-          <p className="text-accent max-w-lg">
+        <motion.div 
+          className="max-w-3xl mx-auto text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          viewport={{ once: true }}
+        >
+          <span className="font-mono text-xs uppercase tracking-widest text-accent/80 dark:text-white/70 inline-block mb-2">Our Work</span>
+          <h2 className="text-4xl md:text-5xl font-serif mb-4 text-ink dark:text-white">Selected Projects</h2>
+          <p className="text-accent/70 dark:text-white/60 max-w-xl mx-auto">
             A collection of our most recent work across various disciplines,
             showcasing our minimalist approach to design.
           </p>
-        </div>
+        </motion.div>
 
         {/* Filter Buttons */}
-        <div className="flex flex-wrap mb-12 border-b border-gray-200 pb-4">
+        <motion.div 
+          className="flex flex-wrap justify-center mb-12 border-b border-accent/10 dark:border-white/10 pb-4 max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           {categories.map(category => (
-            <button
+            <motion.button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
               className={`mr-6 mb-4 font-mono text-xs uppercase tracking-widest pb-2 border-b transition-colors ${
                 selectedCategory === category.id
-                  ? 'border-ink text-ink'
-                  : 'border-transparent text-accent hover:text-ink'
+                  ? 'border-accent text-accent dark:border-white dark:text-white'
+                  : 'border-transparent text-accent/60 hover:text-accent dark:text-white/60 dark:hover:text-white'
               }`}
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
             >
               {category.label}
-            </button>
+            </motion.button>
           ))}
-        </div>
+        </motion.div>
 
         {/* Projects Grid */}
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.3 }}
           layout
         >
           <AnimatePresence>
@@ -117,27 +158,42 @@ const Work: React.FC = () => {
               <motion.div
                 key={project.id}
                 layout
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4 }}
-                onClick={() => setSelectedId(project.id)}
-                className="paper-card aspect-square overflow-hidden cursor-pointer group"
+                variants={itemVariants}
+                exit={{ opacity: 0, scale: 0.95 }}
+                onMouseEnter={() => setHoveredItem(project.id)}
+                onMouseLeave={() => setHoveredItem(null)}
+                className="overflow-hidden rounded-md bg-white dark:bg-dark-surface border border-ink/5 dark:border-white/5 shadow-sm hover:shadow-md group cursor-pointer"
+                whileHover={{ y: -8 }}
+                transition={{ duration: 0.3 }}
               >
-                <div className="relative h-full w-full">
-                  <img 
+                <div className="relative aspect-[4/3] overflow-hidden">
+                  <motion.img 
                     src={project.image} 
                     alt={project.title} 
-                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                    className="w-full h-full object-cover"
+                    initial={{ scale: 1 }}
+                    animate={{ 
+                      scale: hoveredItem === project.id ? 1.05 : 1
+                    }}
+                    transition={{ 
+                      duration: 0.6, 
+                      ease: [0.165, 0.84, 0.44, 1] 
+                    }}
                   />
-                  <div className="absolute inset-0 bg-ink/0 group-hover:bg-ink/20 transition-colors duration-300"></div>
                   
-                  <div className="absolute inset-x-0 bottom-0 p-6 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <div className="bg-paper p-4 shadow-paper">
-                      <span className="text-accent text-xs font-mono mb-1 block">{project.client} — {project.year}</span>
-                      <h3 className="font-serif text-lg">{project.title}</h3>
-                    </div>
-                  </div>
+                  <motion.div 
+                    className="absolute inset-0 bg-ink/50 flex flex-col justify-end p-6"
+                    initial={{ opacity: 0 }}
+                    animate={{ 
+                      opacity: hoveredItem === project.id ? 1 : 0
+                    }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <span className="text-xs uppercase tracking-wider font-mono text-white/80 mb-2">
+                      {project.client} — {project.year}
+                    </span>
+                    <h3 className="font-serif text-lg text-white">{project.title}</h3>
+                  </motion.div>
                 </div>
               </motion.div>
             ))}

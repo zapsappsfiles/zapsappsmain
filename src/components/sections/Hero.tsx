@@ -1,148 +1,277 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import gsap from 'gsap';
-import Button from '../ui/Button';
 import { useTheme } from '../../contexts/ThemeContext';
-import { AnimatePresence, motion } from 'framer-motion';
 
 const Hero: React.FC = () => {
   const { darkMode } = useTheme();
-  const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const sectionRef = useRef<HTMLElement>(null);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
-  const subRef = useRef<HTMLParagraphElement>(null);
-  const btnsRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const marqueeRef = useRef<HTMLDivElement>(null);
+  const [currentServiceIndex, setCurrentServiceIndex] = useState(0);
   
-  // Words to cycle through
-  const words = [
-    'innovative',
-    'powerful',
-    'seamless',
-    'intuitive',
-    'modern'
+  // Add scroll progress tracking with the hero section as the target
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+  
+  // Transform scrollY into x position and opacity for the background text
+  const bgTextX = useTransform(scrollYProgress, [0, 0.5], [0, 200]);
+  // Add opacity transform to fade out as it moves right
+  const bgTextOpacity = useTransform(scrollYProgress, [0, 0.5], [0.1, 0.01]);
+  
+  // Array of services that will change with animation
+  const services = [
+    'web design',
+    'branding',
+    'graphic design',
+    'SEO optimization'
   ];
-  
-  // Control the word cycling animation
+
+  // Handle service text cycling
   useEffect(() => {
-    const wordInterval = setInterval(() => {
-      setCurrentWordIndex(prevIndex => (prevIndex + 1) % words.length);
+    const interval = setInterval(() => {
+      setCurrentServiceIndex((prev) => (prev + 1) % services.length);
     }, 3000);
     
-    return () => clearInterval(wordInterval);
-  }, [words.length]);
+    return () => clearInterval(interval);
+  }, [services.length]);
 
+  // Create a better infinite scrolling effect for the background text
   useEffect(() => {
-    if (headlineRef.current && subRef.current && btnsRef.current) {
-      gsap.fromTo(
-        headlineRef.current,
-        { opacity: 0, y: 40 },
-        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }
-      );
-      gsap.fromTo(
-        subRef.current,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.7, delay: 0.3, ease: 'power3.out' }
-      );
-      gsap.fromTo(
-        btnsRef.current,
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.6, delay: 0.6, ease: 'power3.out' }
-      );
-    }
+    if (!marqueeRef.current) return;
+    
+    const setupMarquee = () => {
+      // Clear any existing animations
+      gsap.killTweensOf('.marquee-track');
+      
+      // Get the track element
+      const track = document.querySelector('.marquee-track');
+      if (!track) return;
+      
+      // Calculate the duration based on the content length
+      // Longer duration = slower animation
+      const duration = 120;
+      
+      // Create the animation
+      gsap.to('.marquee-track', {
+        x: '-50%',
+        ease: 'none',
+        duration: duration,
+        repeat: -1,
+        overwrite: true
+      });
+    };
+    
+    // Run the setup function
+    setupMarquee();
+    
+    // Set up a resize listener to handle viewport changes
+    window.addEventListener('resize', setupMarquee);
+    
+    // Clean up
+    return () => {
+      gsap.killTweensOf('.marquee-track');
+      window.removeEventListener('resize', setupMarquee);
+    };
   }, []);
 
-  // Handle button clicks
-  const scrollToSection = (id: string) => {
-    const section = document.getElementById(id);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
+  // Initialize GSAP animations
+  useEffect(() => {
+    if (!heroRef.current) return;
+    
+    // Animate hero elements on load
+    const timeline = gsap.timeline();
+    
+    timeline
+      .fromTo(
+        '.hero-title',
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: 'power3.out', delay: 0.5 }
+      )
+      .fromTo(
+        '.hero-desc',
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: 'power3.out' },
+        '-=0.7'
+      )
+      .fromTo(
+        '.hero-buttons',
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' },
+        '-=0.6'
+      )
+      .fromTo(
+        '.hero-service-tags',
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', stagger: 0.1 },
+        '-=0.5'
+      );
+      
+    return () => {
+      timeline.kill();
+    };
+  }, []);
+
+  // Handle scroll down click
+  const scrollToNextSection = () => {
+    const nextSection = document.getElementById('work');
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   return (
     <section 
+      ref={heroRef}
       id="home" 
-      ref={sectionRef}
-      className={`relative min-h-[100vh] flex items-center ${darkMode ? 'bg-dark' : 'bg-paper'} overflow-hidden`}
+      className={`min-h-screen flex flex-col items-center justify-center relative px-6 md:px-12 lg:px-16 overflow-hidden ${
+        darkMode ? 'bg-black text-white' : 'bg-white text-black'
+      }`}
     >
-      {/* Abstract background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        {/* Grid pattern */}
-        <div className={`absolute inset-0 ${darkMode 
-          ? 'bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2740%27 height=%2740%27 viewBox=%270 0 40 40%27%3E%3Cpath d=%27M0 20h40M20 0v40%27 stroke=%27%23222%27 fill=%27none%27 stroke-width=%27.5%27/%3E%3C/svg%3E")]' 
-          : 'bg-[url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2740%27 height=%2740%27 viewBox=%270 0 40 40%27%3E%3Cpath d=%27M0 20h40M20 0v40%27 stroke=%27%23e5e7eb%27 fill=%27none%27 stroke-width=%27.5%27/%3E%3C/svg%3E")]'
-        } opacity-30`} />
-      </div>
-      
-      {/* Main content */}
-      <div className="container mx-auto px-4 md:px-6 py-12 z-10 relative">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Text content */}
-            <div className="lg:col-span-8 text-left">
-              <h1
-                ref={headlineRef}
-                className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.1] mb-8 font-semibold ${darkMode ? 'text-white' : 'text-ink'}`}
-              >
-                <div className="leading-tight">
-                  Building
-                  <span className="relative mx-2">
-                    <AnimatePresence mode="wait">
-                      <motion.span
-                        key={currentWordIndex}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0, color: darkMode ? '#fff' : '#222' }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.5 }}
-                        className="font-bold"
-                      >
-                        {words[currentWordIndex]}
-                      </motion.span>
-                    </AnimatePresence>
-                  </span>
-                  digital products
+      {/* Hero Content */}
+      <div className="w-full max-w-7xl mx-auto z-10 pt-16">
+        <div className="flex flex-col lg:flex-row items-start">
+          {/* Left numbered label */}
+          <div className="mb-6 lg:mb-0 lg:mr-10 lg:mt-1">
+            <p className="text-lg md:text-xl opacity-50">01</p>
+          </div>
+          
+          {/* Main hero section content */}
+          <div className="flex-1">
+            <h1 className="hero-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-[0.95] uppercase max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl">
+              ZapsApps: Web Design & Development NYC
+            </h1>
+            
+            <div className="flex flex-col md:flex-row gap-12 md:gap-20 mt-24">
+              {/* Service tags */}
+              <div className="md:w-1/2 flex-shrink-0">
+                <div className="flex flex-wrap gap-3">
+                  {['Brand Websites', 'Business Sites', 'Creative Design', 'User Experience'].map((tag, index) => (
+                    <motion.div
+                      key={tag}
+                      className={`hero-service-tags px-4 py-2 rounded-full text-sm ${
+                        darkMode 
+                          ? 'bg-white/10 hover:bg-white/20' 
+                          : 'bg-black/5 hover:bg-black/10'
+                      } transition-colors cursor-pointer`}
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      {tag}
+                    </motion.div>
+                  ))}
                 </div>
-              </h1>
-              <p ref={subRef} className={`text-lg md:text-xl max-w-xl mb-10 ${darkMode ? 'text-white/70' : 'text-ink/80'} leading-relaxed`}>
-                ZapsApps creates powerful, innovative solutions that transform 
-                your ideas into exceptional digital experiences.
-              </p>
-              <div ref={btnsRef} className="flex flex-col sm:flex-row gap-5">
-                <Button 
-                  variant="primary" 
-                  size="lg" 
-                  onClick={() => scrollToSection('projects')}
-                  icon={<i className="ri-arrow-right-line" />}
-                  iconPosition="right"
-                  className="transition-colors duration-300 dark:bg-white dark:text-dark hover:bg-ink hover:text-white dark:hover:bg-accent dark:hover:text-white"
+              </div>
+              
+              {/* Description */}
+              <div className="md:w-1/2">
+                <p className="hero-desc text-base md:text-lg opacity-80 leading-relaxed">
+                  We craft stunning websites that captivate your audience and grow your business. 
+                  Our designs blend creativity with purpose, making your brand shine on every screen. 
+                  Simple to navigate, beautiful to experience, and built to turn visitors into customers. 
+                  Let us help tell your story in a way that stands out and brings results.
+                </p>
+                
+                {/* Learn more link */}
+                <motion.a
+                  href="#work"
+                  className="hero-buttons inline-flex items-center text-lg mt-8 group"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToNextSection();
+                  }}
+                  initial={{ opacity: 1 }}
+                  whileHover={{ x: 5 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  View Our Work
-                </Button>
-                <Button 
-                  variant="primary" 
-                  size="lg" 
-                  onClick={() => scrollToSection('contact')}
-                >
-                  Get In Touch
-                </Button>
+                  Learn more
+                  <motion.span 
+                    className="ml-2 inline-block"
+                    initial={{ x: 0 }}
+                    animate={{ x: [0, 5, 0] }}
+                    whileHover={{ x: 5 }}
+                    transition={{ 
+                      duration: 1.5, 
+                      ease: "easeInOut", 
+                      repeat: Infinity,
+                      repeatDelay: 1
+                    }}
+                  >
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      width="24" 
+                      height="24" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    >
+                      <path d="M5 12h14"></path>
+                      <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                  </motion.span>
+                </motion.a>
               </div>
             </div>
-            
-            {/* Visual element - Abstract design */}
-            {/* Removed orbiting/circular visual for minimalism */}
-            {/* <div className="lg:col-span-4 hidden lg:block"> ... </div> */}
           </div>
         </div>
       </div>
-
-      {/* Scroll indicator */}
+      
+      {/* New improved marquee implementation */}
       <div 
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center z-20"
+        ref={marqueeRef}
+        className="absolute bottom-0 left-0 w-full h-[20vw] overflow-hidden -z-10 pointer-events-none"
       >
-        <span className={`text-xs font-mono uppercase tracking-widest mb-2 ${darkMode ? 'text-white/70' : 'text-accent/70'}`}>Scroll</span>
-        <div 
-          className={`w-px h-12 ${darkMode ? 'bg-white/30' : 'bg-accent/30'}`}
-        ></div>
+        <motion.div 
+          className="relative w-full h-full"
+          style={{ opacity: bgTextOpacity, x: bgTextX }}
+        >
+          {/* This is a better marquee implementation that uses CSS and JS for smooth performance */}
+          <div className="marquee-container w-full h-full relative overflow-hidden">
+            <div className="marquee-track flex whitespace-nowrap absolute">
+              {/* Create two copies of the content for seamless looping */}
+              {[...Array(2)].map((_, outerIndex) => (
+                <div key={outerIndex} className="flex whitespace-nowrap">
+                  {services.map((service, i) => (
+                    <div 
+                      key={`${outerIndex}-${i}`} 
+                      className="text-[18vw] font-bold uppercase leading-none ml-8 mr-16 tracking-tighter opacity-50 inline-block"
+                      style={{ width: 'auto', whiteSpace: 'nowrap' }}
+                    >
+                      {service}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
       </div>
+      
+      {/* Scroll indicator */}
+      <motion.button 
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 hidden md:flex flex-col items-center opacity-70 hover:opacity-100 transition-opacity"
+        onClick={scrollToNextSection}
+        whileHover={{ y: 5 }}
+        transition={{ duration: 0.2 }}
+      >
+        <span className="text-xs uppercase tracking-wider mb-2">Scroll</span>
+        <motion.div 
+          className={`w-px h-10 ${darkMode ? 'bg-white' : 'bg-black'}`}
+          animate={{ 
+            scaleY: [1, 0.8, 1],
+            opacity: [0.7, 1, 0.7],
+          }}
+          transition={{ 
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </motion.button>
     </section>
   );
 };

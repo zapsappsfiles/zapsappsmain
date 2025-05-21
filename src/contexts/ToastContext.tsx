@@ -28,7 +28,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       <Toast
         message={message}
         type={type}
-        isVisible={isVisible}
+        show={isVisible}
         onClose={hideToast}
       />
     </ToastContext.Provider>

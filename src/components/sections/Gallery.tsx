@@ -74,9 +74,9 @@ const Gallery: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
   const [hoverState, setHoverState] = useState<{[key: number]: boolean}>({});
+  const [isAnimating, setIsAnimating] = useState(false);
   const galleryRef = useRef<HTMLDivElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
-
+  
   const filteredProjects = selectedCategory === 'All'
     ? galleryItems
     : galleryItems.filter(item => item.category === selectedCategory);
@@ -95,136 +95,168 @@ const Gallery: React.FC = () => {
     setHoverState(prev => ({...prev, [id]: isHovering}));
   };
 
-  useEffect(() => {
-    if (cardsRef.current) {
-      gsap.utils.toArray<HTMLElement>(cardsRef.current.querySelectorAll('.gallery-card')).forEach((card, i) => {
-        gsap.fromTo(
-          card,
-          { opacity: 0, y: 60, scale: 0.97 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.7,
-            delay: i * 0.08,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top 85%',
-              toggleActions: 'play none none none',
-            },
-          }
-        );
-      });
+  // Handle category change with animation lock
+  const handleCategoryChange = (category: string) => {
+    if (isAnimating || category === selectedCategory) return;
+    
+    setIsAnimating(true);
+    setSelectedCategory(category);
+    
+    // Release animation lock after transition completes
+    setTimeout(() => setIsAnimating(false), 800);
+  };
+
+  // Animation variants for staggered animations
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        duration: 0.4
+      } 
+    },
+    exit: { 
+      opacity: 0,
+      transition: {
+        staggerChildren: 0.05,
+        staggerDirection: -1,
+        duration: 0.3,
+        when: "afterChildren"
+      } 
     }
-    return () => ScrollTrigger.getAll().forEach(t => t.kill());
-  }, [filteredProjects]);
+  };
+
+  // Fade up animation for gallery items
+  const itemVariants = {
+    hidden: { 
+      opacity: 0, 
+      y: 20 
+    },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: 0.6, 
+        ease: [0.165, 0.84, 0.44, 1]
+      }
+    },
+    exit: { 
+      opacity: 0,
+      y: 20,
+      transition: { 
+        duration: 0.4
+      } 
+    }
+  };
 
   return (
-    <motion.section
+    <section
       id="gallery"
       className="py-24 bg-paper dark:bg-dark relative overflow-hidden"
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, ease: 'easeOut' }}
-      viewport={{ once: true }}
       ref={galleryRef}
     >
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div
+          className="max-w-3xl mx-auto text-center mb-16"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.7 }}
           viewport={{ once: true }}
-          className="max-w-3xl mx-auto text-center mb-16"
         >
-          <span className="font-mono text-xs uppercase tracking-widest text-accent/80 dark:text-white/70">
+          <span className="font-mono text-xs uppercase tracking-widest text-accent/80 dark:text-white/70 inline-block mb-2">
             Our Portfolio
           </span>
-          <h2 className="text-4xl md:text-5xl font-serif mt-4 mb-6 text-ink dark:text-white">
+          <h2 className="text-4xl md:text-5xl font-serif mb-4 text-ink dark:text-white">
             Featured Projects
           </h2>
-          <p className="text-accent/70 dark:text-white/60 text-lg">
+          <p className="text-accent/70 dark:text-white/60 max-w-xl mx-auto">
             Explore our latest work and see how we help businesses transform their digital presence.
           </p>
         </motion.div>
 
         {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {categories.map((category, index) => (
+        <motion.div 
+          className="flex flex-wrap justify-center gap-3 mb-12 max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          {categories.map((category) => (
             <motion.button
               key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 font-mono text-xs uppercase tracking-wider transition-all duration-300 ${
+              onClick={() => handleCategoryChange(category)}
+              className={`px-5 py-2.5 font-mono text-xs uppercase tracking-wider transition-all duration-300 rounded-md ${
                 selectedCategory === category
-                  ? 'bg-accent text-white shadow-md dark:bg-white dark:text-dark'
+                  ? 'bg-accent text-white dark:bg-white dark:text-dark'
                   : 'bg-accent/5 text-accent hover:bg-accent/10 dark:bg-white/10 dark:text-white/80 dark:hover:bg-white/20'
               }`}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-              viewport={{ once: true }}
+              whileHover={{ y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: 0.2 }}
             >
               {category}
             </motion.button>
           ))}
-        </div>
+        </motion.div>
 
-        {/* Project Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" ref={cardsRef}>
-          <AnimatePresence mode="wait">
-            {filteredProjects.map((project, index) => (
-              <motion.div
-                key={project.id}
-                layout
-                className="gallery-card relative group cursor-pointer overflow-hidden rounded-md shadow-md bg-white dark:bg-dark/80"
-                onMouseEnter={() => handleHover(project.id, true)}
-                onMouseLeave={() => handleHover(project.id, false)}
-                onClick={() => setSelectedProject(project.id)}
-                style={{
-                  // Using staggered height for visual interest
-                  height: index % 3 === 0 ? '380px' : index % 3 === 1 ? '340px' : '360px'
-                }}
-              >
-                <div className="absolute inset-0 overflow-hidden">
-                  <motion.img
-                    src={project.image}
-                    alt={project.title}
-                    className="w-full h-full object-cover"
-                    animate={{ 
-                      scale: hoverState[project.id] ? 1.05 : 1,
-                    }}
-                    transition={{ duration: 0.4 }}
-                  />
-                </div>
+        {/* Gallery Grid */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          exit="exit"
+          viewport={{ once: true, amount: 0.3 }}
+        >
+          {filteredProjects.map((project) => (
+            <motion.div
+              key={project.id}
+              variants={itemVariants}
+              className="overflow-hidden rounded-md bg-white dark:bg-dark-surface border border-ink/5 dark:border-white/5 shadow-sm hover:shadow-md"
+              onMouseEnter={() => handleHover(project.id, true)}
+              onMouseLeave={() => handleHover(project.id, false)}
+              onClick={() => setSelectedProject(project.id)}
+              whileHover={{ y: -8 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="aspect-video overflow-hidden">
+                <motion.img
+                  src={project.image}
+                  alt={project.title}
+                  className="w-full h-full object-cover"
+                  initial={{ scale: 1 }}
+                  animate={{ 
+                    scale: hoverState[project.id] ? 1.05 : 1
+                  }}
+                  transition={{ 
+                    duration: 0.6, 
+                    ease: [0.165, 0.84, 0.44, 1]
+                  }}
+                />
+                
                 <motion.div 
-                  className={`absolute inset-0 ${project.color}/80 dark:bg-white/10`}
+                  className="absolute inset-0 bg-ink/50 flex flex-col justify-end p-6 text-white"
                   initial={{ opacity: 0 }}
                   animate={{ 
-                    opacity: hoverState[project.id] ? 1 : 0,
+                    opacity: hoverState[project.id] ? 1 : 0
                   }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white dark:text-white">
-                    <h3 className="text-xl font-serif mb-2">{project.title}</h3>
-                    <p className="text-white mb-3 text-sm line-clamp-2 dark:text-white/90">{project.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {project.technologies.map((tech, i) => (
-                        <span 
-                          key={i}
-                          className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-white/20 text-white rounded-sm dark:bg-white/30 dark:text-dark"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
+                  <span className="text-xs uppercase tracking-wider font-mono mb-2">{project.category}</span>
+                  <h3 className="text-xl font-serif mb-2">{project.title}</h3>
+                  <div className="flex gap-2 flex-wrap mt-2">
+                    {project.technologies.map((tech, i) => (
+                      <span key={i} className="text-xs py-1 px-2 bg-white/20 rounded-sm">{tech}</span>
+                    ))}
                   </div>
                 </motion.div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
 
         {/* Project Modal */}
         <AnimatePresence>
@@ -233,18 +265,23 @@ const Gallery: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 dark:bg-black/90 z-50 flex items-center justify-center p-4 md:p-8"
+              transition={{ duration: 0.3 }}
+              className="fixed inset-0 bg-black/80 dark:bg-black/90 z-[100] flex items-center justify-center p-4 md:p-8 backdrop-blur-sm"
               onClick={() => setSelectedProject(null)}
             >
               <motion.div
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 20, opacity: 0 }}
-                className="relative max-w-4xl w-full bg-paper dark:bg-dark rounded-md overflow-hidden shadow-2xl"
+                initial={{ y: 40, opacity: 0, scale: 0.95 }}
+                animate={{ y: 0, opacity: 1, scale: 1 }}
+                exit={{ y: 40, opacity: 0, scale: 0.95 }}
+                transition={{ 
+                  duration: 0.5, 
+                  ease: [0.165, 0.84, 0.44, 1]
+                }}
+                className="relative max-w-5xl w-full bg-white dark:bg-dark-surface border border-ink/5 dark:border-white/5 rounded-xl overflow-hidden shadow-xl"
                 onClick={e => e.stopPropagation()}
               >
                 <button
-                  className="absolute top-4 right-4 text-accent/70 bg-white/80 hover:opacity-80 z-10 w-8 h-8 flex items-center justify-center rounded-full dark:bg-dark dark:text-white"
+                  className="absolute top-4 right-4 text-accent/70 bg-white/80 hover:bg-white hover:text-accent z-10 w-10 h-10 flex items-center justify-center rounded-full dark:bg-dark-surface dark:text-white dark:hover:bg-white/20 transition-all duration-300"
                   onClick={() => setSelectedProject(null)}
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -257,49 +294,86 @@ const Gallery: React.FC = () => {
                   if (!project) return null;
 
                   return (
-                    <motion.div 
-                      className="grid md:grid-cols-5 h-full"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 }}
-                    >
+                    <div className="grid md:grid-cols-5 h-full">
                       <div className="md:col-span-2 h-full overflow-hidden">
                         <motion.img
                           src={project.image}
                           alt={project.title}
                           className="w-full h-full object-cover"
-                          initial={{ scale: 1.05 }}
-                          animate={{ scale: 1 }}
-                          transition={{ duration: 0.5 }}
+                          initial={{ scale: 1.2, filter: 'brightness(0.8)' }}
+                          animate={{ 
+                            scale: 1, 
+                            filter: 'brightness(1)',
+                          }}
+                          transition={{ 
+                            duration: 0.6, 
+                            ease: [0.165, 0.84, 0.44, 1]
+                          }}
                         />
                       </div>
-                      <div className="p-6 md:p-8 md:col-span-3">
-                        <div>
-                          <span className="font-mono text-xs uppercase tracking-wider text-accent/80 bg-accent/5 px-3 py-1 inline-block dark:text-white dark:bg-white/10">
+                      <div className="p-6 md:p-10 md:col-span-3">
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          <motion.span 
+                            className="font-mono text-xs uppercase tracking-wider text-accent/80 bg-accent/5 px-3 py-1 inline-block dark:text-white dark:bg-white/10"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.1 }}
+                          >
                             {project.category}
-                          </span>
-                          <h3 className="text-2xl font-serif mt-4 mb-2 text-ink dark:text-white">
+                          </motion.span>
+                          <motion.h3 
+                            className="text-3xl font-serif mt-4 mb-4 text-ink dark:text-white"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.2 }}
+                          >
                             {project.title}
-                          </h3>
-                          <p className="text-accent/80 dark:text-white/80 mb-4">
+                          </motion.h3>
+                          <motion.p 
+                            className="text-accent/70 dark:text-white/60 mb-6 leading-relaxed"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.3 }}
+                          >
                             {project.description}
-                          </p>
-                          <div className="flex flex-wrap gap-2 mb-4">
+                          </motion.p>
+                          <motion.div 
+                            className="flex flex-wrap gap-2 mb-8"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.4, delay: 0.4 }}
+                          >
                             {project.technologies.map((tech, i) => (
-                              <span 
+                              <motion.span 
                                 key={i}
-                                className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 bg-accent/10 text-accent rounded-sm dark:bg-white/20 dark:text-white"
+                                className="text-[10px] font-mono uppercase tracking-wider px-3 py-1.5 bg-accent/10 text-accent rounded-md dark:bg-white/20 dark:text-white"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.3, delay: 0.4 + (i * 0.05) }}
                               >
                                 {tech}
-                              </span>
+                              </motion.span>
                             ))}
-                          </div>
-                          <a href={project.link} className="inline-block mt-2 text-xs font-mono uppercase tracking-wider text-accent hover:underline dark:text-white/80">
-                            View Project
-                          </a>
-                        </div>
+                          </motion.div>
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: 0.6 }}
+                          >
+                            <a 
+                              href={project.link} 
+                              className="inline-block px-5 py-3 bg-accent text-white font-mono text-xs uppercase tracking-wider rounded-md hover:bg-accent/90 transition-all duration-300 dark:bg-white dark:text-dark dark:hover:bg-white/90"
+                            >
+                              View Project
+                            </a>
+                          </motion.div>
+                        </motion.div>
                       </div>
-                    </motion.div>
+                    </div>
                   );
                 })()}
               </motion.div>
@@ -307,7 +381,7 @@ const Gallery: React.FC = () => {
           )}
         </AnimatePresence>
       </div>
-    </motion.section>
+    </section>
   );
 };
 

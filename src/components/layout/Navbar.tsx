@@ -1,204 +1,317 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
 import { useTheme } from '../../contexts/ThemeContext';
-import DarkModeToggle from '../ui/DarkModeToggle';
-import Button from '../ui/Button';
+
+interface NavLink {
+  name: string;
+  href: string;
+}
+
+const navLinks: NavLink[] = [
+  { name: 'Home', href: '#home' },
+  { name: 'Services', href: '#services' },
+  { name: 'Work', href: '#work' },
+  { name: 'About', href: '#about' },
+  { name: 'Contact', href: '#contact' },
+];
 
 const Navbar: React.FC = () => {
   const { darkMode, toggleDarkMode } = useTheme();
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const [activeItem, setActiveItem] = useState('home');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLDivElement>(null);
   
+  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
-      setScrollPosition(window.scrollY);
-      
-      // Update active section based on scroll position
-      const sections = document.querySelectorAll('section[id]');
-      
-      sections.forEach(section => {
-        const sectionTop = (section as HTMLElement).offsetTop - 100;
-        const sectionHeight = (section as HTMLElement).offsetHeight;
-        const sectionId = section.getAttribute('id') || '';
-        
-        if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-          setActiveItem(sectionId);
-        }
-      });
+      const scrollThreshold = 50;
+      setScrolled(window.scrollY > scrollThreshold);
     };
     
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [scrollPosition]);
+  }, []);
 
-  const navItems = [
-    { name: 'Home', href: '#home' },
-    { name: 'Gallery', href: '#gallery' },
-    { name: 'Services', href: '#services' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Process', href: '#process' },
-    { name: 'Contact', href: '#contact' }
-  ];
+  // Handle menu animation with GSAP
+  useEffect(() => {
+    if (!menuRef.current) return;
 
-  const scrollToSection = (id: string) => {
-    const section = document.getElementById(id);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
+    if (menuOpen) {
+      // Animate menu open
+      gsap.to(menuRef.current, {
+        opacity: 1,
+        duration: 0.5,
+        ease: 'power2.out',
+      });
+      
+      // Animate links
+      const links = menuRef.current.querySelectorAll('li');
+      gsap.fromTo(
+        links,
+        { y: 20, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          stagger: 0.1,
+          duration: 0.4,
+          ease: 'power2.out',
+          delay: 0.2,
+        }
+      );
     }
-    if (isOpen) setIsOpen(false);
+  }, [menuOpen]);
+
+  // Handle menu toggle
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  // Close menu when clicking on a link
+  const handleLinkClick = (href: string) => {
+    const element = document.querySelector(href);
+    if (element) {
+      setMenuOpen(false);
+      window.scrollTo({
+        top: element.getBoundingClientRect().top + window.scrollY - 100,
+        behavior: 'smooth',
+      });
+    }
   };
 
   return (
-    <header className={`fixed w-full z-50 transition-all duration-500 ${
-      scrollPosition > 50 
-        ? darkMode 
-          ? 'bg-black/90 backdrop-blur-md shadow-lg py-2.5 border-b border-white/10' 
-          : 'bg-paper/90 backdrop-blur-md shadow-md py-2.5 border-b border-black/5' 
-        : 'bg-transparent py-5 border-b border-transparent'
-    }`}>
-      <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
-        <a 
+    <>
+      {/* Fixed Navigation */}
+      <motion.nav
+        ref={navRef}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled ? 'py-3 backdrop-blur-lg' : 'py-6'
+        } ${darkMode ? 'text-white' : 'text-black'}`}
+        initial={{ opacity: 0, y: -48 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="container mx-auto px-6 flex justify-between items-center">
+          {/* Logo */}
+          <motion.a
           href="#home" 
-          className="font-mono text-lg tracking-tight group flex items-center gap-1.5 transition-all duration-300"
-          onClick={(e) => {
-            e.preventDefault();
-            scrollToSection('home');
-            setActiveItem('home');
-          }}
-        >
-          <span className={`w-2 h-2 bg-accent dark:bg-white transition-transform duration-300 group-hover:rotate-45`}></span>
-          <span className="font-bold tracking-wider text-ink dark:text-white">ZapsApps</span>
-        </a>
-        
-        {/* Desktop Menu */}
-        <nav className="hidden md:flex items-center">
-          <ul className="flex space-x-8">
-            {navItems.map((item) => (
-              <li key={item.name} className="relative">
-                <a
-                  href={item.href}
-                  className={`font-mono text-xs tracking-wider uppercase transition-all duration-300 py-2 relative group ${
-                    activeItem === item.href.substring(1) 
-                      ? 'text-ink font-semibold dark:text-white' 
-                      : 'text-accent/70 hover:text-ink dark:text-white/70 dark:hover:text-white'
-                  }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    scrollToSection(item.href.substring(1));
-                    setActiveItem(item.href.substring(1));
-                  }}
-                >
-                  {item.name}
-                  
-                  <motion.span 
-                    className={`absolute -bottom-[2px] left-0 w-full h-[2px] ${
-                      activeItem === item.href.substring(1)
-                        ? 'bg-accent dark:bg-white' 
-                        : 'bg-transparent group-hover:bg-current opacity-30'
-                    }`}
-                    layoutId="navIndicator"
-                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                  />
-                </a>
-              </li>
-            ))}
-          </ul>
-          <div className="mx-8 h-8 w-px bg-accent/10 dark:bg-white/20"></div>
-          <Button 
-            variant="primary"
-            size="sm"
-            onClick={() => scrollToSection('contact')}
-            className="dark:bg-white dark:text-dark"
-          >
-            Get in Touch
-          </Button>
-          <div className="ml-6">
-            <DarkModeToggle isDarkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-          </div>
-        </nav>
-        
-        {/* Mobile Menu Toggle */}
-        <div className="md:hidden flex items-center space-x-4">
-          <DarkModeToggle isDarkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-          <button 
-            onClick={() => setIsOpen(!isOpen)}
-            className="focus:outline-none focus:ring-2 focus:ring-accent/30 rounded-sm group p-1.5"
-            aria-expanded={isOpen}
-            aria-label="Toggle menu"
-          >
-            <div className="w-5 h-4 flex flex-col justify-between relative">
-              <span className={`h-[2px] w-full transform transition-all duration-300 origin-left ${
-                isOpen ? 'rotate-45 translate-y-[1px]' : ''
-              } bg-ink dark:bg-white`}></span>
-              <span className={`h-[2px] transition-all duration-300 ${
-                isOpen ? 'w-0 opacity-0' : 'w-3/4 opacity-100 ml-auto'
-              } bg-ink dark:bg-white`}></span>
-              <span className={`h-[2px] w-full transform transition-all duration-300 origin-left ${
-                isOpen ? '-rotate-45 -translate-y-[1px]' : ''
-              } bg-ink dark:bg-white`}></span>
-            </div>
-          </button>
-        </div>
-      </div>
-      
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className={`md:hidden fixed top-[var(--header-height,62px)] left-0 w-full h-[calc(100vh-var(--header-height,62px))] flex flex-col ${
-              darkMode 
-                ? 'bg-black/95 backdrop-blur-lg border-t border-white/10' 
-                : 'bg-paper/98 backdrop-blur-lg border-t border-black/5'
-            }`}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
+            className="font-bold text-2xl tracking-tighter z-50 mix-blend-difference"
+            whileHover={{ scale: 1.05 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="flex-1 overflow-auto">
-              <nav className="container mx-auto px-6 py-8 flex flex-col">
-                {navItems.map((item, index) => (
+            ZAPSAPPS
+          </motion.a>
+        
+        {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-10">
+            {navLinks.map((link) => (
+              <motion.a
+                key={link.name}
+                href={link.href}
+                className={`text-sm font-light tracking-wider hover:opacity-100 relative ${
+                  darkMode ? 'text-white/70' : 'text-black/70'
+                } hover:text-current transition-colors`}
+                whileHover={{ scale: 1.05 }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                  handleLinkClick(link.href);
+                  }}
+                >
+                {link.name}
+                  <motion.span 
+                  className="absolute left-0 right-0 bottom-0 h-[1px] bg-current origin-right"
+                  initial={{ scaleX: 0 }}
+                  whileHover={{ scaleX: 1, originX: 0 }}
+                  transition={{ duration: 0.3 }}
+                />
+              </motion.a>
+            ))}
+          </div>
+        
+          {/* Menu Button and CTA Button */}
+          <div className="flex items-center space-x-5">
+            {/* Dark Mode Toggle */}
+          <button 
+              onClick={toggleDarkMode}
+              className="relative h-9 w-9 rounded-full flex items-center justify-center overflow-hidden group"
+              aria-label="Toggle dark mode"
+            >
+              <motion.span
+                className={`absolute inset-0 rounded-full ${
+                  darkMode
+                    ? 'bg-white/10 hover:bg-white/20'
+                    : 'bg-black/5 hover:bg-black/10'
+                } transition-colors`}
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.2 }}
+              />
+              <motion.div
+                animate={{
+                  rotate: darkMode ? 180 : 0,
+                }}
+                transition={{ duration: 0.5, ease: 'easeInOut' }}
+              >
+                {darkMode ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4"
+                  >
+                    <circle cx="12" cy="12" r="5" />
+                    <line x1="12" y1="1" x2="12" y2="3" />
+                    <line x1="12" y1="21" x2="12" y2="23" />
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                    <line x1="1" y1="12" x2="3" y2="12" />
+                    <line x1="21" y1="12" x2="23" y2="12" />
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                  </svg>
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4"
+                  >
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                  </svg>
+                )}
+              </motion.div>
+            </button>
+
+            {/* Let's Talk Button */}
+            <motion.a
+              href="#contact"
+              className={`hidden md:flex rounded-full px-6 py-2.5 text-sm font-medium ${
+                darkMode
+                  ? 'bg-white text-black hover:bg-white/90'
+                  : 'bg-black text-white hover:bg-black/90'
+              } transition-colors items-center`}
+              whileHover={{ scale: 1.03 }}
+              transition={{ duration: 0.2 }}
+              onClick={(e) => {
+                e.preventDefault();
+                handleLinkClick('#contact');
+              }}
+            >
+              LET'S TALK
+              <span className="ml-1">•</span>
+            </motion.a>
+
+            {/* Mobile Menu Button */}
+            <motion.button
+              onClick={toggleMenu}
+              className="md:hidden flex flex-col justify-center items-center w-9 h-9 rounded-full z-50 relative"
+            aria-label="Toggle menu"
+          >
+              <motion.span
+                className={`absolute inset-0 rounded-full ${
+                  darkMode
+                    ? 'bg-white/10 hover:bg-white/20'
+                    : 'bg-black/5 hover:bg-black/10'
+                } transition-colors`}
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.2 }}
+              />
+              <motion.span
+                className={`block w-5 h-0.5 ${
+                  darkMode ? 'bg-white' : 'bg-black'
+                } mb-1 relative`}
+                animate={{
+                  rotate: menuOpen ? 45 : 0,
+                  y: menuOpen ? 4 : 0,
+                }}
+                transition={{ duration: 0.3 }}
+              />
+              <motion.span
+                className={`block w-5 h-0.5 ${
+                  darkMode ? 'bg-white' : 'bg-black'
+                } relative`}
+                animate={{
+                  rotate: menuOpen ? -45 : 0,
+                  y: menuOpen ? -2 : 0,
+                }}
+                transition={{ duration: 0.3 }}
+              />
+            </motion.button>
+            </div>
+        </div>
+      </motion.nav>
+      
+      {/* Full-screen Mobile Menu */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            ref={menuRef}
+            className={`fixed inset-0 z-40 flex flex-col items-center justify-center transition-all duration-500 ${darkMode ? 'bg-black/60' : 'bg-white/60'} backdrop-blur-xl`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <ul className="flex flex-col items-center justify-center gap-8 w-full">
+              {navLinks.map((link, index) => (
+                <motion.li
+                  key={index}
+                  className="overflow-hidden text-center"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                >
                   <motion.a
-                    key={item.name}
-                    href={item.href}
-                    className={`font-mono text-sm tracking-wider uppercase py-4 flex justify-between items-center ${
-                      activeItem === item.href.substring(1) 
-                        ? 'text-accent border-b border-accent/20 font-semibold dark:text-white dark:border-white/20' 
-                        : 'text-accent/80 hover:text-accent border-b border-accent/10 dark:text-white/70 dark:hover:text-white dark:border-white/10'
-                    }`}
+                    href={link.href}
+                    className={`text-3xl font-light ${
+                      darkMode ? 'text-white/90' : 'text-black/90'
+                    } block tracking-tighter relative`}
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.2 }}
                     onClick={(e) => {
                       e.preventDefault();
-                      scrollToSection(item.href.substring(1));
-                      setActiveItem(item.href.substring(1));
+                      handleLinkClick(link.href);
                     }}
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
                   >
-                    {item.name}
-                    {activeItem === item.href.substring(1) && (
-                      <span className="w-1.5 h-1.5 bg-accent rounded-sm dark:bg-white"></span>
-                    )}
+                    {link.name}
                   </motion.a>
+                </motion.li>
                 ))}
-              </nav>
-            </div>
-            
-            <div className="container mx-auto px-6 py-8 border-t border-accent/10 dark:border-white/10">
-              <Button
-                variant="primary"
-                fullWidth
-                onClick={() => scrollToSection('contact')}
-                className="dark:bg-white dark:text-dark"
+              <motion.li
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * navLinks.length }}
               >
-                Get in Touch
-              </Button>
-            </div>
+                <motion.a
+                  href="#contact"
+                  className={`mt-6 rounded-full px-8 py-3 text-sm font-medium ${
+                    darkMode
+                      ? 'bg-white text-black hover:bg-white/90'
+                      : 'bg-black text-white hover:bg-black/90'
+                  } transition-colors inline-flex items-center`}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleLinkClick('#contact');
+                  }}
+                >
+                  LET'S TALK
+                  <span className="ml-1">•</span>
+                </motion.a>
+              </motion.li>
+            </ul>
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </>
   );
 };
 

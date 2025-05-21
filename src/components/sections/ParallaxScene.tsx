@@ -16,6 +16,7 @@ const ParallaxScene: React.FC = () => {
   const [viewportHeight, setViewportHeight] = useState(0);
   const { darkMode } = useTheme();
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [isInView, setIsInView] = useState(false);
   
   // Set background colors based on dark mode
   const bgColor = darkMode ? 'bg-dark' : 'bg-paper';
@@ -38,30 +39,60 @@ const ParallaxScene: React.FC = () => {
     // Add event listener with debounce
     window.addEventListener('resize', debouncedUpdateHeight);
     
+    // Add scroll event to check if section is in view
+    const handleScroll = () => {
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+        setIsInView(isVisible);
+      }
+    };
+    
+    // Call once to initialize
+    handleScroll();
+    
+    window.addEventListener('scroll', handleScroll);
+    
     // Cleanup
-    return () => window.removeEventListener('resize', debouncedUpdateHeight);
+    return () => {
+      window.removeEventListener('resize', debouncedUpdateHeight);
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
   
-  // Parallax transformations for different elements
-  // Using smooth easing for natural transitions
-  const y1 = useTransform(scrollY, [0, viewportHeight], [0, 150]);
-  const y2 = useTransform(scrollY, [0, viewportHeight], [0, -100]);
-  const y3 = useTransform(scrollY, [0, viewportHeight], [0, 80]);
-  const rotate1 = useTransform(scrollY, [0, viewportHeight], [0, 25]);
-  const rotate2 = useTransform(scrollY, [0, viewportHeight], [0, -15]);
-  const scale1 = useTransform(scrollY, [0, viewportHeight], [1, 1.2]);
-  const scale2 = useTransform(scrollY, [0, viewportHeight], [1, 0.8]);
+  // Parallax transformations for different elements - Removed unsupported ease options to fix TypeScript errors
+  const y1 = useTransform(scrollY, [0, viewportHeight], [0, 180]);
+  const y2 = useTransform(scrollY, [0, viewportHeight], [0, -160]);
+  const y3 = useTransform(scrollY, [0, viewportHeight], [0, 100]);
+  const rotate1 = useTransform(scrollY, [0, viewportHeight], [0, 35]);
+  const rotate2 = useTransform(scrollY, [0, viewportHeight], [0, -25]);
+  const scale1 = useTransform(scrollY, [0, viewportHeight], [1, 1.3]);
+  const scale2 = useTransform(scrollY, [0, viewportHeight], [1, 0.7]);
   
   // Prepare variants for text animations to ensure consistency
   const textVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30 },
     visible: (delay: number) => ({
       opacity: 1, 
       y: 0, 
       transition: { 
-        duration: 0.7, 
+        duration: 0.9, 
         delay, 
-        ease: "easeOut" 
+        ease: [0.04, 0.62, 0.23, 0.98] 
+      }
+    })
+  };
+
+  // Shape variants for staggered entrance
+  const shapeVariants = {
+    hidden: { opacity: 0, scale: 0.8 },
+    visible: (delay: number) => ({
+      opacity: 1,
+      scale: 1,
+      transition: { 
+        duration: 1.2,
+        delay,
+        ease: [0.04, 0.62, 0.23, 0.98] 
       }
     })
   };
@@ -76,8 +107,7 @@ const ParallaxScene: React.FC = () => {
           <motion.h2 
             className={`font-serif text-3xl md:text-5xl mb-6 ${textColor}`}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            animate={isInView ? "visible" : "hidden"}
             variants={textVariants}
             custom={0}
           >
@@ -86,8 +116,7 @@ const ParallaxScene: React.FC = () => {
           <motion.p 
             className={`font-sans text-lg max-w-2xl mx-auto ${textColor} opacity-80`}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            animate={isInView ? "visible" : "hidden"}
             variants={textVariants}
             custom={0.2}
           >
@@ -97,7 +126,7 @@ const ParallaxScene: React.FC = () => {
         </div>
       </div>
       
-      {/* Parallax Elements */}
+      {/* Enhanced Parallax Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Shape 1 */}
         <motion.div 
@@ -109,9 +138,10 @@ const ParallaxScene: React.FC = () => {
             rotate: rotate1,
             scale: scale1
           }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={shapeVariants}
+          custom={0.1}
         />
         
         {/* Shape 2 */}
@@ -123,9 +153,10 @@ const ParallaxScene: React.FC = () => {
             y: y2,
             rotate: rotate2
           }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={shapeVariants}
+          custom={0.2}
         />
         
         {/* Shape 3 */}
@@ -137,9 +168,10 @@ const ParallaxScene: React.FC = () => {
             y: y3,
             scale: scale2
           }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={shapeVariants}
+          custom={0.3}
         />
         
         {/* Shape 4 */}
@@ -151,9 +183,26 @@ const ParallaxScene: React.FC = () => {
             y: y2,
             rotate: rotate2
           }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={shapeVariants}
+          custom={0.4}
+        />
+        
+        {/* Additional shape for more visual interest */}
+        <motion.div 
+          className={`absolute w-20 h-20 rounded-full ${darkMode ? 'bg-white/20' : 'bg-ink/20'} blur-md`}
+          style={{ 
+            top: '60%', 
+            left: '40%',
+            y: y3,
+            rotate: rotate1,
+            scale: scale1
+          }}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={shapeVariants}
+          custom={0.5}
         />
       </div>
     </section>

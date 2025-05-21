@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import confetti from 'canvas-confetti';
+import confetti from '../../mocks/confetti';
+import type { Options as ConfettiOptions } from '../../mocks/confetti';
 
 export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
@@ -41,10 +42,10 @@ const Toast: React.FC<ToastProps> = ({
     const count = 200;
     const defaults = {
       origin: { y: 0.7 },
-      zIndex: 999,
+      zIndex: 9999,
     };
 
-    function fire(particleRatio: number, opts: confetti.Options) {
+    function fire(particleRatio: number, opts: ConfettiOptions) {
       confetti({
         ...defaults,
         ...opts,
@@ -79,10 +80,10 @@ const Toast: React.FC<ToastProps> = ({
 
   // Colors based on type
   const colors = {
-    success: 'bg-green-500 dark:bg-green-600 border-green-600 dark:border-green-700',
-    error: 'bg-red-500 dark:bg-red-600 border-red-600 dark:border-red-700',
-    warning: 'bg-yellow-500 dark:bg-yellow-600 border-yellow-600 dark:border-yellow-700',
-    info: 'bg-blue-500 dark:bg-blue-600 border-blue-600 dark:border-blue-700'
+    success: 'bg-green-500 dark:bg-green-600 text-white',
+    error: 'bg-red-500 dark:bg-red-600 text-white',
+    warning: 'bg-yellow-500 dark:bg-yellow-600 text-white',
+    info: 'bg-blue-500 dark:bg-blue-600 text-white'
   };
 
   // Icons based on type
@@ -97,20 +98,20 @@ const Toast: React.FC<ToastProps> = ({
     <AnimatePresence>
       {show && (
         <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          initial={{ opacity: 0, y: -20, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+          exit={{ opacity: 0, y: -10, scale: 0.95 }}
           transition={{ duration: 0.4, ease: [0.19, 1, 0.22, 1] }}
-          className="fixed bottom-6 right-6 z-50 flex items-center shadow-xl rounded-lg overflow-hidden"
+          className="fixed top-6 left-1/2 transform -translate-x-1/2 z-[9999] flex items-center shadow-xl rounded-lg overflow-hidden max-w-md w-full mx-4"
         >
-          <div className={`flex items-center p-4 text-white ${colors[type]}`}>
-            <span className="flex-shrink-0 mr-2">
+          <div className={`flex items-center p-4 w-full ${colors[type]}`}>
+            <span className="flex-shrink-0 mr-3">
               {icons[type]}
             </span>
-            <p className="text-sm font-medium">{message}</p>
+            <p className="text-sm font-medium flex-1">{message}</p>
             <button
               onClick={onClose}
-              className="ml-4 p-1 rounded-full hover:bg-white/20 transition-colors"
+              className="ml-4 p-1 rounded-full hover:bg-white/20 transition-colors flex-shrink-0"
               aria-label="Close notification"
             >
               <i className="ri-close-line"></i>
