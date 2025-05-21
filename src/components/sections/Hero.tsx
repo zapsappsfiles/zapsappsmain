@@ -17,8 +17,8 @@ const Hero: React.FC = () => {
   
   // Transform scrollY into x position and opacity for the background text
   const bgTextX = useTransform(scrollYProgress, [0, 0.5], [0, 200]);
-  // Add opacity transform to fade out as it moves right
-  const bgTextOpacity = useTransform(scrollYProgress, [0, 0.5], [0.1, 0.01]);
+  // Add opacity transform to fade out as it moves right, less transparent in dark mode
+  const bgTextOpacity = useTransform(scrollYProgress, [0, 0.5], [darkMode ? 0.2 : 0.1, 0.01]);
   
   // Array of services that will change with animation
   const services = [
@@ -140,7 +140,7 @@ const Hero: React.FC = () => {
           {/* Main hero section content */}
           <div className="flex-1">
             <h1 className="hero-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-[0.95] uppercase max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl">
-              ZapsApps: Web Design & Development NYC
+              ZapsApps: Web Design & Development
             </h1>
             
             <div className="flex flex-col md:flex-row gap-12 md:gap-20 mt-24">

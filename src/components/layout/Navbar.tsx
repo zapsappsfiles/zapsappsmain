@@ -85,6 +85,7 @@ const Navbar: React.FC = () => {
       {/* Fixed Navigation */}
       <motion.nav
         ref={navRef}
+        key={darkMode ? 'navbar-dark' : 'navbar-light'}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled ? 'py-3 backdrop-blur-lg' : 'py-6'
         } ${darkMode ? 'text-white' : 'text-black'}`}
