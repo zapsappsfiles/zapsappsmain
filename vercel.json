@@ -80,16 +80,15 @@
   ],
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/:path((?!api/).*)",
       "has": [
         {
           "type": "host",
           "value": "zapsapps.com"
         }
       ],
-      "destination": "https://www.zapsapps.com/:path*",
-      "permanent": true,
-      "statusCode": 308
+      "destination": "https://www.zapsapps.com/:path",
+      "statusCode": 301
     }
   ],
   "cleanUrls": true,
