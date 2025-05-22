@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
-// import emailjs from 'emailjs-com'; // Uncomment this if you want to use EmailJS
 
 const Contact: React.FC = () => {
   const { darkMode } = useTheme();
@@ -15,6 +14,7 @@ const Contact: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
   
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -35,42 +35,33 @@ const Contact: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(false);
 
-    // To implement EmailJS, uncomment this block and provide your service, template and user IDs
-    // try {
-    //   await emailjs.send(
-    //     'YOUR_SERVICE_ID',
-    //     'YOUR_TEMPLATE_ID',
-    //     {
-    //       name: formData.name,
-    //       email: formData.email,
-    //       goal: formData.goal,
-    //       message: formData.message,
-    //     },
-    //     'YOUR_USER_ID'
-    //   );
-    //   setSubmitSuccess(true);
-    // } catch (error) {
-    //   console.error('Failed to send email:', error);
-    // }
-    
-    // Simulate form submission for now
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setSubmitSuccess(true);
-    setFormData({
-      name: '',
-      email: '',
-      message: '',
-      goal: '',
-      services: []
-    });
-    
-    // Reset success message after 3 seconds
-    setTimeout(() => {
-      setSubmitSuccess(false);
-    }, 3000);
+    try {
+      const response = await fetch('https://formspree.io/f/xkgraoba', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          goal: formData.goal,
+          message: formData.message,
+        }),
+      });
+
+      if (response.ok) {
+        setIsSubmitting(false);
+        setSubmitSuccess(true);
+        setFormData({ name: '', email: '', message: '', goal: '', services: [] });
+        setTimeout(() => setSubmitSuccess(false), 3000);
+      } else {
+        throw new Error('Form submission failed');
+      }
+    } catch (error) {
+      setIsSubmitting(false);
+      setSubmitError(true);
+      setTimeout(() => setSubmitError(false), 3000);
+    }
   };
 
   return (
@@ -288,8 +279,27 @@ const Contact: React.FC = () => {
                       strokeWidth="2" 
                       strokeLinecap="round" 
                       strokeLinejoin="round"
-              >
+                    >
                       <path d="M20 6L9 17l-5-5"></path>
+                    </svg>
+                  </>
+                ) : submitError ? (
+                  <>
+                    <span>Try again</span>
+                    <svg 
+                      xmlns="http://www.w3.org/2000/svg" 
+                      width="20" 
+                      height="20" 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="15" y1="9" x2="9" y2="15" />
+                      <line x1="9" y1="9" x2="15" y2="15" />
                     </svg>
                   </>
                 ) : (
