@@ -140,8 +140,17 @@ const Hero: React.FC = () => {
           {/* Main hero section content */}
           <div className="flex-1">
             <h1 className="hero-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-[0.95] uppercase max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl">
-              ZapsApps: Web Design & Development
+              ZapsApps: Web Design & Development in NYC
             </h1>
+            <p className="text-lg md:text-xl font-medium mb-6 max-w-3xl">
+              We are a student-founded web design and development studio based in Manhattan, New York City. Our team specializes in responsive websites, branding, graphic design, and SEO optimization for businesses and startups. Let us help you grow your digital presence and connect with your audience.
+            </p>
+            <div className="flex flex-wrap gap-4 mb-8">
+              <a href="#about" className="underline text-accent hover:text-accent-dark">About Us</a>
+              <a href="#services" className="underline text-accent hover:text-accent-dark">Our Services</a>
+              <a href="#work" className="underline text-accent hover:text-accent-dark">Projects</a>
+              <a href="#contact" className="underline text-accent hover:text-accent-dark">Contact</a>
+            </div>
             
             <div className="flex flex-col md:flex-row gap-12 md:gap-20 mt-24">
               {/* Service tags */}

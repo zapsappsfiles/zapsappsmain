@@ -18,8 +18,9 @@ const App: React.FC = () => {
     <ThemeProvider>
       <Layout>
         <SEO
-          title="ZapsApps: Web Design & Development in New York City | Manhattan Branding & SEO"
-          description="ZapsApps is a top-rated web design and development studio in NYC. We build modern, responsive websites, offer branding, SEO, and digital solutions for businesses in Manhattan and beyond."
+          title="ZapsApps: Web Design & Development in NYC | Branding, SEO, and Digital Solutions"
+          description="ZapsApps is a student-founded web design and development studio in New York City. We create modern, responsive websites, branding, and SEO solutions for businesses in Manhattan and beyond."
+          url="https://zapsapps.com/"
         />
         <Hero />
         <Services />
