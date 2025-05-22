@@ -130,23 +130,24 @@ const Hero: React.FC = () => {
       }`}
     >
       {/* Hero Content */}
-      <div className="w-full max-w-7xl mx-auto z-10 pt-8">
+      <div className="w-full max-w-7xl mx-auto z-10 pt-16">
         <div className="flex flex-col lg:flex-row items-start">
           {/* Left numbered label */}
-          <div className="mb-2 lg:mb-0 lg:mr-10 lg:mt-1">
+          <div className="mb-6 lg:mb-0 lg:mr-10 lg:mt-1">
             <p className="text-lg md:text-xl opacity-50">01</p>
           </div>
           
           {/* Main hero section content */}
           <div className="flex-1">
-            <h1 className="hero-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-4 leading-[0.95] uppercase max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl">
-              ZapsApps: Web Design & Development
+            <h1 className="hero-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-[0.95] uppercase max-w-4xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl">
+              Custom Web Design & Development That Converts
             </h1>
-            <div className="flex flex-col md:flex-row gap-8 md:gap-12 mt-12">
+            
+            <div className="flex flex-col md:flex-row gap-12 md:gap-20 mt-24">
               {/* Service tags */}
               <div className="md:w-1/2 flex-shrink-0">
                 <div className="flex flex-wrap gap-3">
-                  {['Brand Websites', 'Business Sites', 'Creative Design', 'User Experience'].map((tag, index) => (
+                  {['Web Design', 'Development', 'Branding', 'UX Design'].map((tag, index) => (
                     <motion.div
                       key={tag}
                       className={`hero-service-tags px-4 py-2 rounded-full text-sm ${

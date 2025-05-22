@@ -34,10 +34,9 @@ const Footer: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <h3 className="font-bold text-2xl tracking-tighter mb-6">ZAPSAPPS</h3>
-              <div className={`${darkMode ? 'text-white/70' : 'text-black/70'} space-y-1`}>
-                <p>New York, NY</p>
-                <p>United States</p>
-              </div>
+                              <div className={`${darkMode ? 'text-white/70' : 'text-black/70'} space-y-1`}>
+                  <p>Available Worldwide</p>
+                </div>
             </motion.div>
           </div>
 
@@ -78,23 +77,11 @@ const Footer: React.FC = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <h3 className="text-sm uppercase tracking-wider mb-6 opacity-50">Contact</h3>
-              <ul className="space-y-6">
-                {contactLinks.map((link) => (
-                  <li key={link.label}>
-                    <p className={`text-sm ${darkMode ? 'text-white/50' : 'text-black/50'} mb-1`}>
-                      {link.label}
-                    </p>
-                    <motion.a
-                      href={`mailto:${link.email}`}
-                      className={`text-lg ${darkMode ? 'text-white hover:text-white/70' : 'text-black hover:text-black/70'} transition-colors`}
-                      whileHover={{ x: 5 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {link.email}
-                    </motion.a>
-                  </li>
-                ))}
-              </ul>
+              <div className="space-y-4">
+                <h3 className="font-medium">Contact</h3>
+                <p>zapsapps1@gmail.com</p>
+                <p>+1 (718) 500-7647</p>
+              </div>
             </motion.div>
           </div>
 

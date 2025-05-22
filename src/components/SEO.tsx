@@ -12,12 +12,14 @@ interface SEOProps {
 }
 
 const SEO: React.FC<SEOProps> = ({
-  title = 'ZapsApps | Web Design & Development',
-  description = 'ZapsApps is a student-founded web design and development studio. We create modern, responsive websites, branding, and SEO solutions for businesses and startups.',
+  title = 'ZapsApps | Modern Web Design & Development Solutions',
+  description = 'ZapsApps is a student-founded startup specializing in web design, development, branding, and digital solutions. We create modern, responsive websites with a focus on user experience and performance.',
   keywords = [
     'web design',
     'web development',
     'website design',
+    'web design company',
+    'web developer',
     'branding services',
     'SEO optimization',
     'responsive web design',
@@ -26,38 +28,49 @@ const SEO: React.FC<SEOProps> = ({
     'student startup',
     'graphic design services',
     'web design portfolio',
-    'affordable web design',
     'professional website development',
     'mobile-friendly websites',
     'modern web applications',
-    'ecommerce website development'
+    'ecommerce website development',
+    'custom web solutions',
+    'website optimization'
   ],
   image = '/og-image.jpg',
-  url = 'https://zapsapps.com/'
+  url = 'https://zapsapps.com'
 }) => {
   useEffect(() => {
+    // Update title
     document.title = title;
+
+    // Update meta tags
     updateMetaTag('description', description);
     updateMetaTag('keywords', keywords.join(', '));
+
+    // Update Open Graph tags
     updateMetaTag('og:title', title, 'property');
     updateMetaTag('og:description', description, 'property');
-    updateMetaTag('og:image', image, 'property');
+    updateMetaTag('og:image', `${url}${image}`, 'property');
     updateMetaTag('og:url', url, 'property');
     updateMetaTag('og:type', 'website', 'property');
     updateMetaTag('og:site_name', 'ZapsApps', 'property');
+
+    // Update Twitter Card tags
     updateMetaTag('twitter:card', 'summary_large_image');
     updateMetaTag('twitter:site', '@zapsapps');
     updateMetaTag('twitter:creator', '@zapsapps');
     updateMetaTag('twitter:title', title);
     updateMetaTag('twitter:description', description);
-    updateMetaTag('twitter:image', image);
+    updateMetaTag('twitter:image', `${url}${image}`);
+
+    // Update other SEO tags
     updateMetaTag('robots', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
     updateMetaTag('googlebot', 'index, follow');
     updateMetaTag('theme-color', '#222222');
     updateMetaTag('apple-mobile-web-app-title', 'ZapsApps');
     updateMetaTag('application-name', 'ZapsApps');
     updateMetaTag('msapplication-TileColor', '#222222');
-    // Canonical
+
+    // Update canonical link
     let canonicalLink = document.querySelector("link[rel='canonical']") as HTMLLinkElement;
     if (!canonicalLink) {
       canonicalLink = document.createElement('link');
@@ -65,16 +78,9 @@ const SEO: React.FC<SEOProps> = ({
       document.head.appendChild(canonicalLink);
     }
     canonicalLink.setAttribute('href', url);
-    // Apple touch icon
-    let appleIcon = document.querySelector("link[rel='apple-touch-icon']") as HTMLLinkElement;
-    if (!appleIcon) {
-      appleIcon = document.createElement('link');
-      appleIcon.setAttribute('rel', 'apple-touch-icon');
-      appleIcon.setAttribute('href', '/apple-touch-icon.png');
-      document.head.appendChild(appleIcon);
-    }
+
     // Update JSON-LD
-    let scriptTag = document.querySelector('#json-ld') as HTMLScriptElement;
+    let scriptTag = document.getElementById('json-ld') as HTMLScriptElement;
     if (!scriptTag) {
       scriptTag = document.createElement('script');
       scriptTag.id = 'json-ld';
@@ -85,23 +91,17 @@ const SEO: React.FC<SEOProps> = ({
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "ZapsApps",
-      "alternateName": "ZapsApps",
+      "alternateName": "ZapsApps Web Solutions",
       "description": description,
       "url": url,
       "logo": `${url}/logo.png`,
-      "image": image,
+      "image": `${url}${image}`,
       "sameAs": [
         "https://twitter.com/zapsapps",
         "https://instagram.com/zapsapps",
         "https://linkedin.com/company/zapsapps",
         "https://github.com/zapsapps"
       ],
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Manhattan",
-        "addressRegion": "NY",
-        "addressCountry": "US"
-      },
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "customer service",
@@ -118,7 +118,7 @@ const SEO: React.FC<SEOProps> = ({
         "SEO Optimization",
         "Graphic Design",
         "Digital Solutions",
-        "New York Web Services"
+        "Modern Web Development"
       ]
     });
 

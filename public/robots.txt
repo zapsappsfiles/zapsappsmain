@@ -9,10 +9,13 @@ Sitemap: https://zapsapps.com/sitemap.xml
 # Crawl-delay
 Crawl-delay: 10
 
-# Disallow access to any temporary files
-User-agent: *
+# Disallow access to development assets and temporary files
 Disallow: /temp_icons/
 Disallow: /*.json$
+Disallow: /*.map$
+Disallow: /api/
+Disallow: /static/development/
+Disallow: /_next/static/development/
 
 # Allow patterns
 Allow: /*.js
