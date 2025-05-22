@@ -12,65 +12,52 @@ interface SEOProps {
 }
 
 const SEO: React.FC<SEOProps> = ({
-  title = 'ZapsApps',
-  description = 'ZapsApps is a student-founded startup specializing in web design, development, branding, and SEO in New York City. We create modern digital solutions with a focus on responsive design and user experience.',
+  title = 'ZapsApps | Web Design & Development',
+  description = 'ZapsApps is a student-founded web design and development studio. We create modern, responsive websites, branding, and SEO solutions for businesses and startups.',
   keywords = [
-    'web design NYC',
-    'web development New York',
-    'website design Manhattan',
-    'NYC web design company',
-    'New York web developer',
-    'branding services NYC',
-    'SEO optimization New York',
+    'web design',
+    'web development',
+    'website design',
+    'branding services',
+    'SEO optimization',
     'responsive web design',
-    'UI/UX design NYC',
+    'UI/UX design',
     'digital branding',
-    'student startup NYC',
+    'student startup',
     'graphic design services',
     'web design portfolio',
-    'Manhattan web developer',
-    'affordable web design NYC',
+    'affordable web design',
     'professional website development',
     'mobile-friendly websites',
     'modern web applications',
     'ecommerce website development'
   ],
   image = '/og-image.jpg',
-  url = 'https://zapsapps.com'
+  url = 'https://zapsapps.com/'
 }) => {
   useEffect(() => {
-    // Always set title to just the site name
-    document.title = 'ZapsApps';
-
-    // Update meta tags
+    document.title = title;
     updateMetaTag('description', description);
     updateMetaTag('keywords', keywords.join(', '));
-
-    // Update Open Graph tags
     updateMetaTag('og:title', title, 'property');
     updateMetaTag('og:description', description, 'property');
     updateMetaTag('og:image', image, 'property');
     updateMetaTag('og:url', url, 'property');
     updateMetaTag('og:type', 'website', 'property');
     updateMetaTag('og:site_name', 'ZapsApps', 'property');
-
-    // Update Twitter Card tags
     updateMetaTag('twitter:card', 'summary_large_image');
     updateMetaTag('twitter:site', '@zapsapps');
     updateMetaTag('twitter:creator', '@zapsapps');
     updateMetaTag('twitter:title', title);
     updateMetaTag('twitter:description', description);
     updateMetaTag('twitter:image', image);
-
-    // Update other SEO tags
     updateMetaTag('robots', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
     updateMetaTag('googlebot', 'index, follow');
     updateMetaTag('theme-color', '#222222');
     updateMetaTag('apple-mobile-web-app-title', 'ZapsApps');
     updateMetaTag('application-name', 'ZapsApps');
     updateMetaTag('msapplication-TileColor', '#222222');
-
-    // Update canonical link
+    // Canonical
     let canonicalLink = document.querySelector("link[rel='canonical']") as HTMLLinkElement;
     if (!canonicalLink) {
       canonicalLink = document.createElement('link');
@@ -78,7 +65,14 @@ const SEO: React.FC<SEOProps> = ({
       document.head.appendChild(canonicalLink);
     }
     canonicalLink.setAttribute('href', url);
-
+    // Apple touch icon
+    let appleIcon = document.querySelector("link[rel='apple-touch-icon']") as HTMLLinkElement;
+    if (!appleIcon) {
+      appleIcon = document.createElement('link');
+      appleIcon.setAttribute('rel', 'apple-touch-icon');
+      appleIcon.setAttribute('href', '/apple-touch-icon.png');
+      document.head.appendChild(appleIcon);
+    }
     // Update JSON-LD
     let scriptTag = document.querySelector('#json-ld') as HTMLScriptElement;
     if (!scriptTag) {

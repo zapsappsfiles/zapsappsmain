@@ -60,6 +60,13 @@ const FAQ: React.FC = () => {
 
   return (
     <div>
+      <h2 className="text-4xl md:text-5xl font-bold mb-12 tracking-tighter">Frequently Asked Questions</h2>
+      <div className="flex flex-wrap gap-4 mb-8">
+        <a href="#about" className="underline text-accent hover:text-accent-dark">About Us</a>
+        <a href="#services" className="underline text-accent hover:text-accent-dark">Our Services</a>
+        <a href="#work" className="underline text-accent hover:text-accent-dark">Projects</a>
+        <a href="#contact" className="underline text-accent hover:text-accent-dark">Contact</a>
+      </div>
       <div className="flex justify-end mb-4">
         <button
           className="px-4 py-2 rounded-full text-sm font-medium bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 transition-colors"

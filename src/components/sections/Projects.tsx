@@ -90,13 +90,18 @@ const Projects: React.FC = () => {
               ref={titleRef}
               className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 md:mb-0 leading-none"
               initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              PROJECTS
+              Projects
               <span className="text-5xl ml-6 opacity-70">0</span>
             </motion.h2>
+            <div className="flex flex-wrap gap-4 mb-8">
+              <a href="#about" className="underline text-accent hover:text-accent-dark">About Us</a>
+              <a href="#services" className="underline text-accent hover:text-accent-dark">Our Services</a>
+              <a href="#contact" className="underline text-accent hover:text-accent-dark">Contact</a>
+            </div>
           </motion.div>
           
           <motion.p 

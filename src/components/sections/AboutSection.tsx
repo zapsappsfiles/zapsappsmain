@@ -61,8 +61,13 @@ const About: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
               >
-                About
+                About ZapsApps
               </motion.h2>
+              <div className="flex flex-wrap gap-4 mb-8">
+                <a href="#services" className="underline text-accent hover:text-accent-dark">Our Services</a>
+                <a href="#work" className="underline text-accent hover:text-accent-dark">Projects</a>
+                <a href="#contact" className="underline text-accent hover:text-accent-dark">Contact</a>
+              </div>
               <motion.p 
                 className="text-lg max-w-sm opacity-70"
                 style={{ y: descriptionY }}
