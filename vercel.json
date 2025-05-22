@@ -5,7 +5,7 @@
   ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "headers": [
         {
           "key": "X-Content-Type-Options",
@@ -38,7 +38,7 @@
       ]
     },
     {
-      "source": "/(.+\\.(jpg|jpeg|gif|png|ico|svg|webp))",
+      "source": "/:path*.(jpg|jpeg|gif|png|ico|svg|webp)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -51,7 +51,7 @@
       ]
     },
     {
-      "source": "/(.+\\.(css|js))",
+      "source": "/:path*.(css|js)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -60,7 +60,7 @@
       ]
     },
     {
-      "source": "/(.+\\.(woff|woff2))",
+      "source": "/:path*.(woff|woff2)",
       "headers": [
         {
           "key": "Cache-Control",
