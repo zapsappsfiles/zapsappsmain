@@ -145,18 +145,6 @@ const Hero: React.FC = () => {
             <p className="text-lg md:text-xl font-medium mb-6 max-w-3xl">
               We are a student-founded web design and development studio. Our team specializes in responsive websites, branding, graphic design, and SEO optimization for businesses and startups. Let us help you grow your digital presence and connect with your audience.
             </p>
-            <div className="flex flex-wrap gap-4 mb-8">
-              <a href="#about" className="underline text-accent hover:text-accent-dark">About Us</a>
-              <a href="#services" className="underline text-accent hover:text-accent-dark">Our Services</a>
-              <a href="#work" className="underline text-accent hover:text-accent-dark">Projects</a>
-              <a href="#contact" className="underline text-accent hover:text-accent-dark">Contact</a>
-              <a href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML/Document_and_website_structure" target="_blank" rel="noopener noreferrer" className="underline text-accent hover:text-accent-dark">Learn about web structure</a>
-            </div>
-            <div className="flex gap-4 mb-8">
-              <a href="https://twitter.com/intent/tweet?url=https://zapsapps.com&text=Check%20out%20ZapsApps!" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">Share on Twitter</a>
-              <a href="https://www.facebook.com/sharer/sharer.php?u=https://zapsapps.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 hover:underline">Share on Facebook</a>
-              <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://zapsapps.com" target="_blank" rel="noopener noreferrer" className="text-blue-800 hover:underline">Share on LinkedIn</a>
-            </div>
             
             <div className="flex flex-col md:flex-row gap-12 md:gap-20 mt-24">
               {/* Service tags */}
