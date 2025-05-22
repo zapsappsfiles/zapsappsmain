@@ -80,11 +80,6 @@
   ],
   "redirects": [
     {
-      "source": "/",
-      "destination": "https://www.zapsapps.com",
-      "permanent": true
-    },
-    {
       "source": "/:path*",
       "has": [
         {
@@ -93,7 +88,8 @@
         }
       ],
       "destination": "https://www.zapsapps.com/:path*",
-      "permanent": true
+      "permanent": true,
+      "statusCode": 308
     }
   ],
   "cleanUrls": true,
