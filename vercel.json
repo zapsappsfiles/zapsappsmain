@@ -1,6 +1,9 @@
 {
   "redirects": [
-    { "source": "/(.*)", "has": [{"host": "www.zapsapps.com"}], "destination": "https://zapsapps.com/$1", "permanent": true },
-    { "source": "/(.*)", "destination": "https://zapsapps.com/$1", "permanent": true }
+    {
+      "source": "/(.*)",
+      "destination": "https://zapsapps.com/$1",
+      "permanent": true
+    }
   ]
 } 
