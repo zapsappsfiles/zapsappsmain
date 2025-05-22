@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Manhattan Grid Pattern -->
+  <g opacity="0.15" stroke="#000000">
+    <!-- Horizontal Streets -->
+    <path d="M200 0 L1000 0" stroke-width="1" />
+    <path d="M200 50 L1000 50" stroke-width="1" />
+    <path d="M200 100 L1000 100" stroke-width="1" />
+    <path d="M200 150 L1000 150" stroke-width="1" />
+    <path d="M200 200 L1000 200" stroke-width="1" />
+    <path d="M200 250 L1000 250" stroke-width="1" />
+    <path d="M200 300 L1000 300" stroke-width="1" />
+    <path d="M200 350 L1000 350" stroke-width="1" />
+    <path d="M200 400 L1000 400" stroke-width="1" />
+    <path d="M200 450 L1000 450" stroke-width="1" />
+    <path d="M200 500 L1000 500" stroke-width="1" />
+    <path d="M200 550 L1000 550" stroke-width="1" />
+    <path d="M200 600 L1000 600" stroke-width="1" />
+    <path d="M200 650 L1000 650" stroke-width="1" />
+    <path d="M200 700 L1000 700" stroke-width="1" />
+    <path d="M200 750 L1000 750" stroke-width="1" />
+    <path d="M200 800 L1000 800" stroke-width="1" />
+
+    <!-- Vertical Avenues -->
+    <path d="M200 0 L200 800" stroke-width="1" />
+    <path d="M250 0 L250 800" stroke-width="1" />
+    <path d="M300 0 L300 800" stroke-width="1" />
+    <path d="M350 0 L350 800" stroke-width="1" />
+    <path d="M400 0 L400 800" stroke-width="1" />
+    <path d="M450 0 L450 800" stroke-width="1" />
+    <path d="M500 0 L500 800" stroke-width="1" />
+    <path d="M550 0 L550 800" stroke-width="1" />
+    <path d="M600 0 L600 800" stroke-width="1" />
+    <path d="M650 0 L650 800" stroke-width="1" />
+    <path d="M700 0 L700 800" stroke-width="1" />
+    <path d="M750 0 L750 800" stroke-width="1" />
+    <path d="M800 0 L800 800" stroke-width="1" />
+    <path d="M850 0 L850 800" stroke-width="1" />
+    <path d="M900 0 L900 800" stroke-width="1" />
+    <path d="M950 0 L950 800" stroke-width="1" />
+    <path d="M1000 0 L1000 800" stroke-width="1" />
+  </g>
+
+  <!-- Broadway -->
+  <path d="M300 0 L900 800" stroke="#000000" stroke-width="2" opacity="0.2" />
+
+  <!-- Central Park Rectangle -->
+  <rect x="500" y="200" width="200" height="400" fill="#000000" opacity="0.1" />
+</svg> 
