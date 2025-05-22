@@ -50,8 +50,8 @@ const Contact: React.FC = () => {
       });
 
       if (response.ok) {
-        setIsSubmitting(false);
-        setSubmitSuccess(true);
+    setIsSubmitting(false);
+    setSubmitSuccess(true);
         setFormData({ name: '', email: '', message: '', goal: '', services: [] });
         setTimeout(() => setSubmitSuccess(false), 3000);
       } else {
@@ -279,7 +279,7 @@ const Contact: React.FC = () => {
                       strokeWidth="2" 
                       strokeLinecap="round" 
                       strokeLinejoin="round"
-                    >
+              >
                       <path d="M20 6L9 17l-5-5"></path>
                     </svg>
                   </>

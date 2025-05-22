@@ -34,9 +34,9 @@ const Footer: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <h3 className="font-bold text-2xl tracking-tighter mb-6">ZAPSAPPS</h3>
-                              <div className={`${darkMode ? 'text-white/70' : 'text-black/70'} space-y-1`}>
+              <div className={`${darkMode ? 'text-white/70' : 'text-black/70'} space-y-1`}>
                   <p>Available Worldwide</p>
-                </div>
+              </div>
             </motion.div>
           </div>
 
