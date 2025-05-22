@@ -184,13 +184,10 @@ const Services: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
               >
-                Our Services
+                Our
+                <br />
+                Services
               </motion.h2>
-              <div className="flex flex-wrap gap-4 mb-8">
-                <a href="#about" className="underline text-accent hover:text-accent-dark">About Us</a>
-                <a href="#work" className="underline text-accent hover:text-accent-dark">Projects</a>
-                <a href="#contact" className="underline text-accent hover:text-accent-dark">Contact</a>
-              </div>
               <motion.p 
                 className="text-lg max-w-sm opacity-70"
                 style={{ y: descriptionY }}

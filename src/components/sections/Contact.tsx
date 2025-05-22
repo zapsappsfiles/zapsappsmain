@@ -82,19 +82,15 @@ const Contact: React.FC = () => {
                 <div className={`w-12 h-px ${darkMode ? 'bg-white/30' : 'bg-black/30'}`}></div>
               </div>
               <motion.h2 
-                className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tighter mb-8 leading-[0.9]"
-                initial={{ opacity: 0, y: 20 }}
+                className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 leading-none"
+                initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
               >
-                Contact ZapsApps
+                Let's work
+                <br />together!
               </motion.h2>
-              <div className="flex flex-wrap gap-4 mb-8">
-                <a href="#about" className="underline text-accent hover:text-accent-dark">About Us</a>
-                <a href="#services" className="underline text-accent hover:text-accent-dark">Our Services</a>
-                <a href="#work" className="underline text-accent hover:text-accent-dark">Projects</a>
-              </div>
               
               <motion.p 
                 className="text-xl opacity-70 max-w-md mt-10 mb-16"
