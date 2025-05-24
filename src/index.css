@@ -12,18 +12,36 @@
     -moz-osx-font-smoothing: grayscale;
     scroll-padding-top: 80px;
     font-family: 'Inter', system-ui, sans-serif;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
   }
   
   body {
     line-height: 1.5;
     font-weight: 400;
     transition: background-color 0.3s ease, color 0.3s ease;
+    /* Prevent horizontal scroll */
+    overflow-x: hidden;
+    /* Improve mobile scroll performance */
+    -webkit-overflow-scrolling: touch;
   }
   
+  /* Responsive typography - no more viewport units */
   h1, h2, h3, h4, h5, h6 {
     line-height: 1.1;
     letter-spacing: -0.02em;
     font-weight: 700;
+    /* Prevent text overflow */
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Better responsive images */
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
   }
   
   /* Selection styling */
@@ -38,8 +56,8 @@
   
   /* Improved scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
   }
   
   ::-webkit-scrollbar-track {
@@ -54,18 +72,202 @@
   input, textarea, button, select, a {
     -webkit-tap-highlight-color: transparent;
   }
-}
-
-/* Common utilities */
-@layer components {
-  .container {
-    @apply max-w-7xl mx-auto px-4 md:px-6 lg:px-8;
+  
+  /* Better button defaults */
+  button {
+    @apply appearance-none;
+    cursor: pointer;
+  }
+  
+  /* Prevent zoom on input focus on iOS */
+  @media screen and (max-width: 767px) {
+    select, textarea, input[type="text"], input[type="password"], 
+    input[type="datetime"], input[type="datetime-local"], 
+    input[type="date"], input[type="month"], input[type="time"], 
+    input[type="week"], input[type="number"], input[type="email"], 
+    input[type="url"] {
+      font-size: 16px;
+    }
   }
 }
 
-/* Blend mode for custom cursor functionality */
-.mix-blend-difference {
-  mix-blend-mode: difference;
+/* STANDARDIZED LAYOUT SYSTEM */
+@layer components {
+  /* ================================
+     CONTAINER SYSTEM - NO MORE INCONSISTENCIES
+     ================================ */
+  
+  /* Main content container - used for most sections */
+  .container-main {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12;
+  }
+  
+  /* Narrow container - for text-heavy sections */
+  .container-narrow {
+    @apply max-w-4xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10;
+  }
+  
+  /* Wide container - for hero and full-width sections */
+  .container-wide {
+    @apply max-w-screen-2xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16;
+  }
+  
+  /* Text container - for optimal reading width */
+  .container-text {
+    @apply max-w-3xl mx-auto px-4 sm:px-6 md:px-8 lg:px-10;
+  }
+  
+  /* ================================
+     SECTION PADDING SYSTEM - CONSISTENT SPACING
+     ================================ */
+  
+  /* Standard section padding */
+  .section-padding {
+    @apply py-16 sm:py-20 md:py-24 lg:py-28 xl:py-32;
+  }
+  
+  /* Small section padding */
+  .section-padding-sm {
+    @apply py-12 sm:py-16 md:py-20 lg:py-24 xl:py-28;
+  }
+  
+  /* Large section padding */
+  .section-padding-lg {
+    @apply py-20 sm:py-24 md:py-28 lg:py-36 xl:py-40;
+  }
+  
+  /* Minimal padding for tight sections */
+  .section-padding-xs {
+    @apply py-8 sm:py-12 md:py-16 lg:py-20 xl:py-24;
+  }
+  
+  /* ================================
+     RESPONSIVE TEXT SYSTEM - NO VIEWPORT UNITS
+     ================================ */
+  
+  /* Display text - for large headers */
+  .text-display {
+    @apply text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl;
+    line-height: 0.9;
+    letter-spacing: -0.025em;
+  }
+  
+  /* Hero text - for main headlines */
+  .text-hero {
+    @apply text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+  
+  /* Section title text */
+  .text-section {
+    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  
+  /* Responsive body text */
+  .text-body-lg {
+    @apply text-lg sm:text-xl md:text-2xl;
+  }
+  
+  .text-body {
+    @apply text-base sm:text-lg md:text-xl;
+  }
+  
+  .text-body-sm {
+    @apply text-sm sm:text-base md:text-lg;
+  }
+  
+  .text-caption {
+    @apply text-xs sm:text-sm md:text-base;
+  }
+  
+  /* ================================
+     GRID SYSTEM - CONSISTENT LAYOUTS
+     ================================ */
+  
+  /* Responsive 2-column grid */
+  .grid-2-col {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16;
+  }
+  
+  /* Responsive 3-column grid */
+  .grid-3-col {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10;
+  }
+  
+  /* Responsive 4-column grid */
+  .grid-4-col {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8;
+  }
+  
+  /* Auto-fit grid with minimum widths */
+  .grid-auto {
+    @apply grid gap-6 md:gap-8;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  
+  /* ================================
+     SPACING UTILITIES
+     ================================ */
+  
+  /* Consistent gap utilities */
+  .gap-section {
+    @apply gap-6 sm:gap-8 md:gap-10 lg:gap-12 xl:gap-16;
+  }
+  
+  .gap-content {
+    @apply gap-4 sm:gap-5 md:gap-6 lg:gap-7 xl:gap-8;
+  }
+  
+  .gap-elements {
+    @apply gap-2 sm:gap-2.5 md:gap-3 lg:gap-3.5 xl:gap-4;
+  }
+  
+  /* ================================
+     BUTTON SYSTEM
+     ================================ */
+  
+  .btn-primary {
+    @apply inline-flex items-center px-6 py-3 md:px-8 md:py-4 rounded-full font-medium transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center px-4 py-2 md:px-6 md:py-3 rounded-full font-medium transition-all duration-200;
+  }
+  
+  /* ================================
+     ANIMATION HELPERS
+     ================================ */
+  
+  .animate-in {
+    @apply opacity-0 translate-y-4;
+  }
+  
+  .animate-in-visible {
+    @apply opacity-100 translate-y-0;
+  }
+  
+  /* ================================
+     SAFE AREAS FOR MOBILE
+     ================================ */
+  
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
 }
 
 /* Fix mobile 100vh issues */
@@ -73,43 +275,60 @@
   .min-h-screen {
     min-height: -webkit-fill-available;
   }
+  
+  .h-screen {
+    height: -webkit-fill-available;
+  }
 }
 
-/* Remove default styling from buttons */
-button {
-  @apply appearance-none;
-}
-
-/* Style for text inputs */
-input, textarea, select {
-  @apply bg-transparent appearance-none focus:outline-none;
-}
-
-/* Custom link hover effect */
-.link-hover {
-  @apply relative inline-block;
+/* Additional mobile fixes */
+@media screen and (max-height: 700px) {
+  .min-h-screen {
+    min-height: 100vh;
   }
   
-.link-hover::after {
-  @apply content-[''] absolute left-0 bottom-0 w-0 h-px bg-current transition-all duration-300 ease-in-out-expo;
+  .h-screen {
+    height: 100vh;
+  }
+}
+
+/* Accessibility - reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .border-current\/10 {
+    @apply border-current border-opacity-30;
   }
   
-.link-hover:hover::after {
-  @apply w-full;
+  .bg-black\/5 {
+    @apply bg-black bg-opacity-20;
+  }
+  
+  .bg-white\/10 {
+    @apply bg-white bg-opacity-25;
+  }
 }
 
-/* Loading/transition animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-/* Enable better support for dark mode */
-.dark {
-  color-scheme: dark;
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
 }

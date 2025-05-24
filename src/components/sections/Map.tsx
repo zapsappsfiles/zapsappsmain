@@ -1,18 +1,11 @@
 import React, { useRef, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
-import FAQ from '../ui/FAQ';
 
 const Map: React.FC = () => {
   const { darkMode } = useTheme();
   const sectionRef = useRef<HTMLDivElement>(null);
-  
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"]
-  });
-  
-  const textY = useTransform(scrollYProgress, [0, 1], [0, -50]);
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
   
   // Inject Product/Service schema for SEO
   useEffect(() => {
@@ -48,6 +41,30 @@ const Map: React.FC = () => {
     });
     return () => { if (scriptTag) scriptTag.remove(); };
   }, []);
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
   
   return (
     <section 
@@ -84,98 +101,98 @@ const Map: React.FC = () => {
       ></div>
       
       {/* Content */}
-      <div className="relative z-20 container mx-auto px-6 md:px-8 h-screen flex flex-col">
+      <div className="relative z-20 container-main h-screen flex flex-col">
         <div className="mt-auto mb-20 md:mb-32 w-full max-w-2xl">
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
+            variants={containerVariants}
           >
-            <div className="flex items-center mb-6">
-              <span className="text-xl opacity-50 mr-4">06</span>
+            <motion.div 
+              className="flex items-center mb-6"
+              variants={itemVariants}
+            >
+              <span className="text-caption opacity-50 mr-4 font-mono">06</span>
               <div className={`w-12 h-px ${darkMode ? 'bg-white/30' : 'bg-black/30'}`}></div>
-            </div>
+            </motion.div>
             
             <motion.h2 
-              className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tighter mb-12 leading-[0.9]"
-              style={{ y: textY }}
+              className="text-section font-bold tracking-tighter mb-12 leading-[0.9]"
+              variants={itemVariants}
             >
               New York !
             </motion.h2>
           
-            <div className="border-t border-current/10 pt-10 md:flex md:justify-between">
-              <div className="mb-10 md:mb-0">
-                <p className="text-sm uppercase tracking-wider opacity-50 mb-4">Location</p>
-                <p className="text-lg opacity-80">Manhattan</p>
-                <p className="text-lg opacity-80">New York, NY 10001</p>
-                <p className="text-lg opacity-80">United States</p>
-                
-                <motion.a
-                  href="https://goo.gl/maps/your-map-link-here"
-                  className={`inline-flex items-center px-6 py-3 rounded-full text-sm mt-8 ${
-                    darkMode 
-                      ? 'bg-white text-black hover:bg-white/90' 
-                      : 'bg-black text-white hover:bg-black/90'
-                  } transition-colors`}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.2 }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Get Directions
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="ml-2"
-                  >
-                    <path d="M5 12h14"></path>
-                    <path d="m12 5 7 7-7 7"></path>
-                  </svg>
-                </motion.a>
+            {/* Contact Information */}
+            <motion.div 
+              className="space-y-8"
+              variants={itemVariants}
+            >
+              <div>
+                <h3 className="text-section font-bold mb-6">Get in Touch</h3>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center mt-1 ${
+                      darkMode ? 'bg-white/10' : 'bg-black/5'
+                    }`}>
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-body font-medium">Location</p>
+                      <p className="text-body-sm opacity-70">Manhattan, New York</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center mt-1 ${
+                      darkMode ? 'bg-white/10' : 'bg-black/5'
+                    }`}>
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-body font-medium">Email</p>
+                      <a 
+                        href="mailto:zapsapps1@gmail.com" 
+                        className="text-body-sm opacity-70 hover:opacity-100 transition-opacity"
+                      >
+                        zapsapps1@gmail.com
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center mt-1 ${
+                      darkMode ? 'bg-white/10' : 'bg-black/5'
+                    }`}>
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-body font-medium">Phone</p>
+                      <a 
+                        href="tel:+17185007647"
+                        className="text-body-sm opacity-70 hover:opacity-100 transition-opacity"
+                      >
+                        +1 (718) 500-7647
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
               
               <div>
-                <p className="text-sm uppercase tracking-wider opacity-50 mb-4">Contact</p>
-                <motion.a 
-                  href="mailto:zapsapps1@gmail.com" 
-                  className="text-lg block mb-2"
-                  whileHover={{ x: 5 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  zapsapps1@gmail.com
-                </motion.a>
-                <motion.a 
-                  href="tel:+17185007647" 
-                  className="text-lg block"
-                  whileHover={{ x: 5 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  +1 (718) 500-7647
-                </motion.a>
-                
-                <div className="mt-8 flex space-x-6">
-                  {['Twitter', 'Instagram', 'LinkedIn'].map((social) => (
-                    <motion.a
-                      key={social}
-                      href="#"
-                      className="opacity-60 hover:opacity-100 transition-opacity"
-                      whileHover={{ y: -3 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      {social}
-                    </motion.a>
-                  ))}
-                </div>
+                <p className="text-body-sm opacity-70 leading-relaxed">
+                  Ready to transform your digital presence? Let's create something amazing together. 
+                  Our team is excited to discuss your next project.
+                </p>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
       </div>

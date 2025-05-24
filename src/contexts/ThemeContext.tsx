@@ -1,100 +1,98 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-type ThemeContextType = {
+interface ThemeContextType {
   darkMode: boolean;
   toggleDarkMode: () => void;
-  setDarkMode: (isDark: boolean) => void;
-  isDarkModePending: boolean;
-};
+  isTransitioning: boolean;
+}
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [isDarkModePending, setIsDarkModePending] = useState(true);
+export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // Initialize theme from localStorage immediately
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('darkMode');
+    if (savedTheme !== null) {
+      return JSON.parse(savedTheme);
+    }
+    // Check system preference if no saved theme
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Initialize theme on mount
+  // Apply theme to document
   useEffect(() => {
-    // Check for saved theme preference or use system preference
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setDarkMode(true);
+    if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
-      setDarkMode(false);
       document.documentElement.classList.remove('dark');
     }
-    
-    // Small delay to prevent flash of wrong theme
-    setTimeout(() => setIsDarkModePending(false), 50);
-  }, []);
-
-  // Listen for system theme changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    
-    const handleChange = (e: MediaQueryListEvent) => {
-      // Only apply system preference if user hasn't set a preference
-      if (!localStorage.getItem('theme')) {
-        setDarkMode(e.matches);
-        if (e.matches) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      }
-    };
-    
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    } else {
-      // For older browsers
-      mediaQuery.addListener(handleChange);
-      return () => mediaQuery.removeListener(handleChange);
-    }
-  }, []);
-
-  // Apply theme changes
-  const applyTheme = (isDark: boolean) => {
-    setDarkMode(isDark);
-    
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      document.documentElement.style.setProperty('color-scheme', 'dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.documentElement.style.setProperty('color-scheme', 'light');
-      localStorage.setItem('theme', 'light');
-    }
-  };
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
 
   const toggleDarkMode = () => {
-    applyTheme(!darkMode);
-  };
-
-  const setTheme = (isDark: boolean) => {
-    applyTheme(isDark);
+    setIsTransitioning(true);
+    
+    // Add a delay for the animation, then switch theme
+    setTimeout(() => {
+      setDarkMode(!darkMode);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 600); // Match animation duration
+    }, 400);
   };
 
   return (
-    <ThemeContext.Provider 
-      value={{ 
-        darkMode, 
-        toggleDarkMode, 
-        setDarkMode: setTheme,
-        isDarkModePending
-      }}
-    >
+    <ThemeContext.Provider value={{ darkMode, toggleDarkMode, isTransitioning }}>
       {children}
+      
+      {/* Full-screen transition overlay */}
+      <AnimatePresence>
+        {isTransitioning && (
+          <motion.div
+            className="fixed inset-0 z-[9999] flex items-center justify-center"
+            style={{
+              background: `linear-gradient(45deg, ${darkMode ? '#ffffff' : '#000000'} 0%, ${darkMode ? '#f0f0f0' : '#1a1a1a'} 100%)`
+            }}
+            initial={{ clipPath: 'circle(0% at 50% 50%)' }}
+            animate={{ clipPath: 'circle(150% at 50% 50%)' }}
+            exit={{ clipPath: 'circle(0% at 50% 50%)' }}
+            transition={{ 
+              duration: 0.8, 
+              ease: [0.22, 1, 0.36, 1] 
+            }}
+          >
+            {/* Center animation element */}
+            <motion.div
+              className={`w-16 h-16 rounded-full border-2 ${darkMode ? 'border-black' : 'border-white'}`}
+              initial={{ scale: 0, rotate: 0 }}
+              animate={{ scale: 1, rotate: 360 }}
+              transition={{ 
+                duration: 0.6, 
+                ease: [0.22, 1, 0.36, 1],
+                delay: 0.2 
+              }}
+            >
+              <motion.div
+                className={`w-full h-full rounded-full ${darkMode ? 'bg-black' : 'bg-white'}`}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ 
+                  duration: 0.4, 
+                  ease: [0.22, 1, 0.36, 1],
+                  delay: 0.4 
+                }}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </ThemeContext.Provider>
   );
 };
 
-export const useTheme = (): ThemeContextType => {
+export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
     throw new Error('useTheme must be used within a ThemeProvider');

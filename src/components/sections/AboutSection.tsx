@@ -1,25 +1,12 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const About: React.FC = () => {
   const { darkMode } = useTheme();
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const [clickedCats, setClickedCats] = useState<Record<number, boolean>>({});
-  const [messageTimers, setMessageTimers] = useState<Record<number, NodeJS.Timeout>>({});
+  const sectionRef = useRef<HTMLElement>(null);
   const [creativityCount, setCreativityCount] = useState<number>(0);
-  
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start end", "end start"]
-  });
-  
-  const titleY = useTransform(scrollYProgress, [0, 1], [0, -50]);
-  const descriptionY = useTransform(scrollYProgress, [0, 1], [0, -30]);
-  
-  // Image parallax effects
-  const imageOneY = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const imageTwoY = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
   
   // Increment creativity counter continuously
   useEffect(() => {
@@ -29,47 +16,64 @@ const About: React.FC = () => {
     
     return () => clearInterval(interval);
   }, []);
-  
-  // Clean up timers on unmount
-  useEffect(() => {
-    return () => {
-      Object.values(messageTimers).forEach(timer => clearTimeout(timer));
-    };
-  }, [messageTimers]);
+
+  // Clean animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
   
   return (
     <section 
       id="about" 
       ref={sectionRef}
-      className={`py-32 md:py-40 overflow-hidden ${
+      className={`section-padding ${
         darkMode ? 'bg-black text-white' : 'bg-white text-black'
       }`}
     >
-      <div className="container mx-auto px-6 md:px-8">
-        <div className="flex flex-col lg:flex-row items-start">
+      <div className="container-main">
+        <div className="grid-2-col items-start">
           {/* Section heading */}
-          <div className="flex items-start lg:w-1/3 mb-16 lg:mb-0 lg:sticky lg:top-32 z-10">
-            <motion.div style={{ y: titleY }}>
-              <div className="flex items-center mb-6">
-                <span className="text-xl opacity-50 mr-4">04</span>
+          <div className="lg:sticky lg:top-32 z-10">
+            <motion.div
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+              variants={containerVariants}
+            >
+              <motion.div 
+                className="flex items-center mb-6"
+                variants={itemVariants}
+              >
+                <span className="text-caption opacity-50 mr-4 font-mono">04</span>
                 <div className={`w-12 h-px ${darkMode ? 'bg-white/30' : 'bg-black/30'}`}></div>
-              </div>
+              </motion.div>
               <motion.h2 
-                className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tighter mb-8 leading-[0.9]"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
+                className="text-section font-bold tracking-tighter mb-8 leading-[0.9]"
+                variants={itemVariants}
               >
                 About
               </motion.h2>
               <motion.p 
-                className="text-lg max-w-sm opacity-70"
-                style={{ y: descriptionY }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-body max-w-sm opacity-70"
+                variants={itemVariants}
               >
                 We're a student-founded startup passionate about creating digital 
                 experiences that push boundaries and connect with audiences.
@@ -78,56 +82,59 @@ const About: React.FC = () => {
           </div>
           
           {/* Main content */}
-          <div className="lg:w-2/3 lg:pl-12 space-y-32">
+          <div className="space-y-32">
             {/* Story & Hero images */}
             <motion.div
               className="border-t border-current/10 pt-10"
               initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
             >
               {/* Hero Images */}
-              <div className="grid grid-cols-2 gap-6 mb-16">
+              <div className="grid-2-col mb-16">
                 <motion.div 
-                  className="aspect-[4/5] h-full w-full overflow-hidden"
-                  style={{ y: imageOneY }}
+                  className="aspect-[4/5] h-full w-full overflow-hidden rounded-lg"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
                 >
                   <img 
-                    src="https://picsum.photos/400/600?random=1" 
-                    alt="Workspace placeholder" 
+                    src="https://picsum.photos/500/700?random=1" 
+                    alt="Creative workspace" 
                     className="h-full w-full object-cover"
                   />
                 </motion.div>
                 <motion.div 
-                  className="aspect-[4/5] h-full w-full overflow-hidden mt-12"
-                  style={{ y: imageTwoY }}
+                  className="aspect-[4/5] h-full w-full overflow-hidden rounded-lg mt-8 lg:mt-12"
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
                 >
                   <img 
-                    src="https://picsum.photos/400/600?random=2" 
-                    alt="Collaboration placeholder" 
+                    src="https://picsum.photos/500/700?random=2" 
+                    alt="Team collaboration" 
                     className="h-full w-full object-cover"
                   />
                 </motion.div>
               </div>
             
               <div className="mt-16">
-                <p className="text-sm uppercase tracking-wider opacity-50 mb-8">Our Story</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                  <p className="text-lg opacity-80 leading-relaxed">
+                <p className="text-caption uppercase tracking-wider opacity-50 mb-8">Our Story</p>
+                <div className="grid-2-col">
+                  <p className="text-body opacity-80 leading-relaxed">
                     Founded recently by a group of ambitious students, ZapsApps is our
                     platform to explore design and technology. We believe great design 
                     should be accessible to everyone, and we're excited to bring our fresh 
                     perspective to every project.
                   </p>
-                  <p className="text-lg opacity-80 leading-relaxed">
+                  <p className="text-body opacity-80 leading-relaxed">
                     As a student startup, we're on a journey of discovery and growth. 
                     We might be new, but we bring enthusiasm, creativity, and a willingness
                     to push boundaries. Every project is an opportunity to learn and 
                     innovate together.
                   </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-20">
+                <div className="grid-3-col mt-20">
                   {[
                     { number: '3', label: 'Projects' },
                     { number: '4', label: 'Team Members' },
@@ -136,11 +143,10 @@ const About: React.FC = () => {
                     <motion.div 
                       key={index}
                       initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: 0.1 * index }}
+                      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                      transition={{ duration: 0.5, delay: 0.6 + 0.1 * index }}
                     >
-                      <h3 className="text-4xl font-bold mb-2">{stat.number}</h3>
+                      <h3 className="text-section font-bold mb-2">{stat.number}</h3>
                       <p className="opacity-60">{stat.label}</p>
                     </motion.div>
                   ))}
@@ -152,26 +158,24 @@ const About: React.FC = () => {
             <motion.div
               className="border-t border-current/10 pt-10"
               initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <p className="text-sm uppercase tracking-wider opacity-50 mb-12">Our Principles</p>
+              <p className="text-caption uppercase tracking-wider opacity-50 mb-12">Our Principles</p>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-6">
+              <div className="grid-3-col">
                 {['Innovation', 'Collaboration', 'Excellence'].map((value, index) => (
                   <motion.div
                     key={value}
                     className="relative"
                     initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
+                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                    transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
                   >
                     <span className={`text-9xl font-bold absolute -top-10 ${darkMode ? 'text-white/5' : 'text-black/5'}`}>
                       0{index + 1}
                     </span>
-                    <h4 className="text-2xl font-medium mb-4 relative">{value}</h4>
+                    <h4 className="text-body-lg font-medium mb-4 relative">{value}</h4>
                     <div className={`w-12 h-px mb-6 ${darkMode ? 'bg-white/30' : 'bg-black/30'}`}></div>
                     <p className="opacity-70 relative">
                       {index === 0 && 'We push boundaries and explore new possibilities in design and technology.'}
@@ -187,13 +191,12 @@ const About: React.FC = () => {
             <motion.div 
               className="mt-20 pt-10 border-t border-current/10"
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.8, delay: 1 }}
             >
               <motion.a
                 href="#contact"
-                className={`inline-flex items-center px-8 py-4 rounded-full text-lg group ${
+                className={`btn-primary ${
                   darkMode 
                     ? 'bg-white text-black hover:bg-white/90' 
                     : 'bg-black text-white hover:bg-black/90'
