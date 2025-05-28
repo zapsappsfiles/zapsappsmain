@@ -52,36 +52,36 @@ const services: Service[] = [
   },
   {
     id: 3,
-    title: 'Graphic Design',
-    description: 'From digital illustrations to print materials, our graphic design services bring your ideas to life with creative and impactful visual solutions.',
+    title: 'Development',
+    description: 'Transform designs into high-performance, scalable websites using modern technologies and best practices for optimal user experience.',
     index: '03',
-    tags: ['Illustration', 'Typography', 'Print', 'Digital'],
+    tags: ['React', 'TypeScript', 'Performance', 'SEO'],
     detailedInfo: {
       bulletPoints: [
-        'Digital and print illustration',
-        'Typography and layout design',
-        'Marketing materials and promotional content',
-        'Social media graphics and digital assets'
+        'Modern React and TypeScript development',
+        'Performance optimization and SEO best practices',
+        'Responsive and accessible code implementation',
+        'Content management system integration'
       ],
-      process: ['Brief', 'Concepts', 'Design', 'Feedback', 'Refinement', 'Delivery'],
-      imageUrl: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=800&q=80'
+      process: ['Planning', 'Architecture', 'Development', 'Testing', 'Optimization', 'Deployment'],
+      imageUrl: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80'
     }
   },
   {
     id: 4,
-    title: 'SEO Optimization',
-    description: 'Improve your website\'s visibility and ranking on search engines through our comprehensive SEO services, driving more organic traffic to your business.',
+    title: 'SEO & Analytics',
+    description: 'Boost your online visibility and track performance with comprehensive SEO optimization and analytics implementation.',
     index: '04',
-    tags: ['Keyword Research', 'On-Page SEO', 'Content Strategy', 'Analytics'],
+    tags: ['SEO', 'Analytics', 'Performance', 'Growth'],
     detailedInfo: {
       bulletPoints: [
-        'Comprehensive keyword research and analysis',
-        'On-page SEO optimization and technical audits',
-        'Content strategy development for search visibility',
-        'Performance tracking and continuous improvement'
+        'Technical SEO optimization and site speed improvements',
+        'Content strategy and keyword optimization',
+        'Analytics setup and performance tracking',
+        'Regular reporting and optimization recommendations'
       ],
-      process: ['Audit', 'Research', 'Implementation', 'Content', 'Monitoring', 'Reporting'],
-      imageUrl: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80'
+      process: ['Audit', 'Strategy', 'Implementation', 'Monitoring', 'Reporting', 'Optimization'],
+      imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80'
     }
   }
 ];
@@ -89,9 +89,14 @@ const services: Service[] = [
 const Services: React.FC = () => {
   const { darkMode } = useTheme();
   const sectionRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const servicesListRef = useRef<HTMLDivElement>(null);
   const [activeService, setActiveService] = useState<number | null>(null);
   const [expandedService, setExpandedService] = useState<number | null>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  
+  // Separate refs for better animation control
+  const isHeaderInView = useInView(headerRef, { once: true, margin: "-50px" });
+  const isServicesInView = useInView(servicesListRef, { once: true, margin: "-100px" });
   
   // Handle service hover
   const handleServiceHover = (id: number) => {
@@ -112,25 +117,50 @@ const Services: React.FC = () => {
     }
   };
 
-  // Clean animation variants
-  const containerVariants = {
+  // Header animation variants
+  const headerContainerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
+        staggerChildren: 0.2,
+        delayChildren: 0.1,
       }
     }
   };
 
-  const itemVariants = {
+  const headerItemVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.6,
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+
+  // Services list animation variants
+  const servicesContainerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      }
+    }
+  };
+
+  const serviceItemVariants = {
+    hidden: { opacity: 0, y: 40, scale: 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.8,
         ease: [0.22, 1, 0.36, 1]
       }
     }
@@ -149,20 +179,21 @@ const Services: React.FC = () => {
           {/* Section heading */}
           <div className="lg:sticky lg:top-32 z-10">
             <motion.div 
+              ref={headerRef}
               initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
-              variants={containerVariants}
+              animate={isHeaderInView ? "visible" : "hidden"}
+              variants={headerContainerVariants}
             >
               <motion.div 
                 className="flex items-center mb-6"
-                variants={itemVariants}
+                variants={headerItemVariants}
               >
                 <span className="text-caption opacity-50 font-mono mr-4">02</span>
                 <div className={`w-8 md:w-12 h-px ${darkMode ? 'bg-white/30' : 'bg-black/30'}`}></div>
               </motion.div>
               <motion.h2 
                 className="text-section font-bold tracking-tighter mb-6 md:mb-8 leading-[0.9] break-words"
-                variants={itemVariants}
+                variants={headerItemVariants}
               >
                 Our
                 <br />
@@ -170,7 +201,7 @@ const Services: React.FC = () => {
               </motion.h2>
               <motion.p 
                 className="text-body max-w-sm opacity-70 leading-relaxed"
-                variants={itemVariants}
+                variants={headerItemVariants}
               >
                 We offer a range of design and development services to help your business stand out in the digital landscape.
               </motion.p>
@@ -178,155 +209,227 @@ const Services: React.FC = () => {
           </div>
           
           {/* Services list */}
-          <div className="w-full">
+          <div>
             <motion.div 
+              ref={servicesListRef}
               className="space-y-4 md:space-y-6"
               initial="hidden"
-              animate={isInView ? "visible" : "hidden"}
-              variants={containerVariants}
+              animate={isServicesInView ? "visible" : "hidden"}
+              variants={servicesContainerVariants}
             >
               {services.map((service, index) => (
-                <motion.div
+                <ServiceCard
                   key={service.id}
-                  className={`relative border-b transition-all duration-300 ${
-                    darkMode ? 'border-white/10 hover:border-white/30' : 'border-black/10 hover:border-black/30'
-                  }`}
-                  variants={itemVariants}
-                  onMouseEnter={() => handleServiceHover(service.id)}
-                  onMouseLeave={handleServiceLeave}
-                  onClick={() => handleServiceClick(service.id)}
-                >
-                  <motion.div 
-                    className="py-6 md:py-8 cursor-pointer"
-                    whileHover={{ x: 5 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <div className="flex items-start justify-between gap-4 md:gap-6">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3 md:mb-4">
-                          <span className="text-caption opacity-50 font-mono flex-shrink-0">
-                            {service.index}
-                          </span>
-                          <h3 className="text-section font-bold tracking-tight break-words">
-                            {service.title}
-                          </h3>
-                        </div>
-                        
-                        <p className="text-body-sm opacity-70 leading-relaxed mb-4 pr-4">
-                          {service.description}
-                        </p>
-                        
-                        {/* Tags */}
-                        <div className="flex flex-wrap gap-elements">
-                          {service.tags.map((tag, tagIndex) => (
-                            <span
-                              key={tagIndex}
-                              className={`px-3 py-1 rounded-full text-caption font-medium ${
-                                darkMode 
-                                  ? 'bg-white/10 text-white/80' 
-                                  : 'bg-black/5 text-black/80'
-                              }`}
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      {/* Arrow indicator */}
-                      <motion.div 
-                        className="flex-shrink-0 mt-2"
-                        animate={{ 
-                          rotate: expandedService === service.id ? 45 : 0,
-                          scale: activeService === service.id ? 1.1 : 1
-                        }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <svg 
-                          className="w-5 h-5 md:w-6 md:h-6 opacity-50"
-                          fill="none" 
-                          stroke="currentColor" 
-                          viewBox="0 0 24 24"
-                        >
-                          <path 
-                            strokeLinecap="round" 
-                            strokeLinejoin="round" 
-                            strokeWidth={2} 
-                            d="M12 4v16m8-8H4" 
-                          />
-                        </svg>
-                      </motion.div>
-                    </div>
-                  </motion.div>
-                  
-                  {/* Expanded content */}
-                  <AnimatePresence>
-                    {expandedService === service.id && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                        className="overflow-hidden"
-                      >
-                        <div className="pb-6 md:pb-8 pt-2 border-t border-current/10">
-                          <div className="grid-2-col mt-4 md:mt-6">
-                            {/* Bullet points */}
-                            <div>
-                              <h4 className="text-body-sm font-semibold mb-3 md:mb-4 opacity-90">
-                                What we deliver:
-                              </h4>
-                              <ul className="space-y-2">
-                                {service.detailedInfo.bulletPoints.map((point, pointIndex) => (
-                                  <motion.li
-                                    key={pointIndex}
-                                    className="text-caption opacity-70 flex items-start gap-2"
-                                    initial={{ opacity: 0, x: -10 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: pointIndex * 0.1, duration: 0.3 }}
-                                  >
-                                    <span className="w-1 h-1 rounded-full bg-current opacity-50 mt-2 flex-shrink-0"></span>
-                                    {point}
-                                  </motion.li>
-                                ))}
-                              </ul>
-                            </div>
-                            
-                            {/* Process */}
-                            <div>
-                              <h4 className="text-body-sm font-semibold mb-3 md:mb-4 opacity-90">
-                                Our process:
-                              </h4>
-                              <div className="flex flex-wrap gap-elements">
-                                {service.detailedInfo.process.map((step, stepIndex) => (
-                                  <motion.span
-                                    key={stepIndex}
-                                    className={`px-3 py-1.5 rounded-full text-caption font-medium ${
-                                      darkMode 
-                                        ? 'bg-white/15 text-white/90' 
-                                        : 'bg-black/10 text-black/90'
-                                    }`}
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: stepIndex * 0.05, duration: 0.3 }}
-                                  >
-                                    {stepIndex + 1}. {step}
-                                  </motion.span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
+                  service={service}
+                  index={index}
+                  activeService={activeService}
+                  expandedService={expandedService}
+                  onHover={handleServiceHover}
+                  onLeave={handleServiceLeave}
+                  onClick={handleServiceClick}
+                  darkMode={darkMode}
+                  isInView={isServicesInView}
+                />
               ))}
             </motion.div>
           </div>
         </div>
       </div>
     </section>
+  );
+};
+
+// Separate ServiceCard component for better organization
+interface ServiceCardProps {
+  service: Service;
+  index: number;
+  activeService: number | null;
+  expandedService: number | null;
+  onHover: (id: number) => void;
+  onLeave: () => void;
+  onClick: (id: number) => void;
+  darkMode: boolean;
+  isInView: boolean;
+}
+
+const ServiceCard: React.FC<ServiceCardProps> = ({
+  service,
+  index,
+  activeService,
+  expandedService,
+  onHover,
+  onLeave,
+  onClick,
+  darkMode,
+  isInView
+}) => {
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isCardInView = useInView(cardRef, { once: true, margin: "-50px" });
+
+  const serviceItemVariants = {
+    hidden: { opacity: 0, y: 40, scale: 0.98 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+        delay: index * 0.1
+      }
+    }
+  };
+
+  return (
+    <motion.div
+      ref={cardRef}
+      className={`relative border-b transition-all duration-300 ${
+        darkMode ? 'border-white/10 hover:border-white/30' : 'border-black/10 hover:border-black/30'
+      }`}
+      initial="hidden"
+      animate={isCardInView ? "visible" : "hidden"}
+      variants={serviceItemVariants}
+      onMouseEnter={() => onHover(service.id)}
+      onMouseLeave={onLeave}
+      onClick={() => onClick(service.id)}
+    >
+      <motion.div
+        className="py-6 md:py-8 cursor-pointer"
+        whileHover={{ x: 5 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="flex items-start justify-between gap-4 md:gap-6">
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3 md:mb-4">
+              <span className="text-caption opacity-50 font-mono flex-shrink-0">
+                {service.index}
+              </span>
+              <h3 className="text-section font-bold tracking-tight break-words">
+                {service.title}
+              </h3>
+            </div>
+            
+            <p className="text-body-sm opacity-70 leading-relaxed mb-4 pr-4">
+              {service.description}
+            </p>
+            
+            {/* Tags */}
+            <motion.div 
+              className="flex flex-wrap gap-elements"
+              initial={{ opacity: 0 }}
+              animate={isCardInView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
+            >
+              {service.tags.map((tag, tagIndex) => (
+                <motion.span
+                  key={tagIndex}
+                  className={`px-3 py-1 rounded-full text-caption font-medium ${
+                    darkMode 
+                      ? 'bg-white/10 text-white/80' 
+                      : 'bg-black/5 text-black/80'
+                  }`}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={isCardInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+                  transition={{ 
+                    duration: 0.4, 
+                    delay: 0.4 + index * 0.1 + tagIndex * 0.05,
+                    ease: [0.22, 1, 0.36, 1]
+                  }}
+                >
+                  {tag}
+                </motion.span>
+              ))}
+            </motion.div>
+          </div>
+          
+          {/* Arrow indicator */}
+          <motion.div 
+            className="flex-shrink-0 mt-2"
+            animate={{ 
+              rotate: expandedService === service.id ? 45 : 0,
+              scale: activeService === service.id ? 1.1 : 1
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            <svg 
+              className="w-5 h-5 md:w-6 md:h-6 opacity-50"
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M12 4v16m8-8H4" 
+              />
+            </svg>
+          </motion.div>
+        </div>
+      </motion.div>
+      
+      {/* Expanded content */}
+      <AnimatePresence>
+        {expandedService === service.id && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="pb-6 md:pb-8 pt-2 border-t border-current/10">
+              <div className="grid-2-col mt-4 md:mt-6">
+                {/* Bullet points */}
+                <div>
+                  <h4 className="text-body-sm font-semibold mb-3 md:mb-4 opacity-90">
+                    What we deliver:
+                  </h4>
+                  <ul className="space-y-2">
+                    {service.detailedInfo.bulletPoints.map((point, pointIndex) => (
+                      <motion.li
+                        key={pointIndex}
+                        className="text-caption opacity-70 flex items-start gap-2"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: pointIndex * 0.1, duration: 0.3 }}
+                      >
+                        <span className="w-1 h-1 rounded-full bg-current opacity-50 mt-2 flex-shrink-0"></span>
+                        {point}
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+                
+                {/* Process */}
+                <div>
+                  <h4 className="text-body-sm font-semibold mb-3 md:mb-4 opacity-90">
+                    Our process:
+                  </h4>
+                  <div className="flex flex-wrap gap-elements">
+                    {service.detailedInfo.process.map((step, stepIndex) => (
+                      <motion.span
+                        key={stepIndex}
+                        className={`px-3 py-1.5 rounded-full text-caption font-medium ${
+                          darkMode 
+                            ? 'bg-white/15 text-white/90' 
+                            : 'bg-black/10 text-black/90'
+                        }`}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: stepIndex * 0.05, duration: 0.3 }}
+                      >
+                        {stepIndex + 1}. {step}
+                      </motion.span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 

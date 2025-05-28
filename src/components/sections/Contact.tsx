@@ -1,11 +1,48 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { useForm, ValidationError } from '@formspree/react';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const Contact: React.FC = () => {
   const { darkMode } = useTheme();
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  
+  // Formspree integration
+  const [state, handleSubmit] = useForm("xkgraoba");
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+
+  // Handle input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle form submission
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await handleSubmit(e);
+    
+    // Reset form if submission was successful
+    if (state.succeeded) {
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+    }
+  };
 
   // Animation variants
   const containerVariants = {
@@ -26,6 +63,19 @@ const Contact: React.FC = () => {
       y: 0,
       transition: {
         duration: 0.8,
+        ease: [0.22, 1, 0.36, 1]
+      }
+    }
+  };
+
+  const formVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        delay: 0.4,
         ease: [0.22, 1, 0.36, 1]
       }
     }
@@ -111,27 +161,88 @@ const Contact: React.FC = () => {
           {/* Right column - Contact form */}
           <div>
             <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              initial="hidden"
+              animate={isInView ? "visible" : "hidden"}
+              variants={formVariants}
             >
-              <form className="space-y-6">
-                <div className="grid-2-col">
+                <form onSubmit={onSubmit} className="space-y-6" method="POST">
+                  <div className="grid-2-col">
+                    <motion.div
+                      whileFocus={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <label htmlFor="name" className="block text-body-sm font-medium mb-2 opacity-70">
+                        Name
+                      </label>
+                      <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                        className={`w-full px-0 py-3 text-body bg-transparent border-0 border-b-2 ${
+                          darkMode ? 'border-white/20 focus:border-white' : 'border-black/20 focus:border-black'
+                        } outline-none transition-colors`}
+                        placeholder="Your name"
+                      />
+                      <ValidationError 
+                        prefix="Name" 
+                        field="name"
+                        errors={state.errors}
+                      />
+                    </motion.div>
+                    
+                    <motion.div
+                      whileFocus={{ scale: 1.02 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <label htmlFor="email" className="block text-body-sm font-medium mb-2 opacity-70">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        className={`w-full px-0 py-3 text-body bg-transparent border-0 border-b-2 ${
+                          darkMode ? 'border-white/20 focus:border-white' : 'border-black/20 focus:border-black'
+                        } outline-none transition-colors`}
+                        placeholder="your@email.com"
+                      />
+                      <ValidationError 
+                        prefix="Email" 
+                        field="email"
+                        errors={state.errors}
+                      />
+                    </motion.div>
+                  </div>
+                  
                   <motion.div
                     whileFocus={{ scale: 1.02 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <label htmlFor="name" className="block text-body-sm font-medium mb-2 opacity-70">
-                      Name
+                    <label htmlFor="subject" className="block text-body-sm font-medium mb-2 opacity-70">
+                      Subject
                     </label>
                     <input
                       type="text"
-                      id="name"
-                      name="name"
+                      id="subject"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      required
                       className={`w-full px-0 py-3 text-body bg-transparent border-0 border-b-2 ${
                         darkMode ? 'border-white/20 focus:border-white' : 'border-black/20 focus:border-black'
                       } outline-none transition-colors`}
-                      placeholder="Your name"
+                      placeholder="Project inquiry"
+                    />
+                    <ValidationError 
+                      prefix="Subject" 
+                      field="subject"
+                      errors={state.errors}
                     />
                   </motion.div>
                   
@@ -139,95 +250,81 @@ const Contact: React.FC = () => {
                     whileFocus={{ scale: 1.02 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <label htmlFor="email" className="block text-body-sm font-medium mb-2 opacity-70">
-                      Email
+                    <label htmlFor="message" className="block text-body-sm font-medium mb-2 opacity-70">
+                      Message
                     </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={6}
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      required
                       className={`w-full px-0 py-3 text-body bg-transparent border-0 border-b-2 ${
                         darkMode ? 'border-white/20 focus:border-white' : 'border-black/20 focus:border-black'
-                      } outline-none transition-colors`}
-                      placeholder="your@email.com"
+                      } outline-none transition-colors resize-none`}
+                      placeholder="Tell us about your project..."
+                    />
+                    <ValidationError 
+                      prefix="Message" 
+                      field="message"
+                      errors={state.errors}
                     />
                   </motion.div>
-                </div>
-                
-                <motion.div
-                  whileFocus={{ scale: 1.02 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <label htmlFor="subject" className="block text-body-sm font-medium mb-2 opacity-70">
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    className={`w-full px-0 py-3 text-body bg-transparent border-0 border-b-2 ${
-                      darkMode ? 'border-white/20 focus:border-white' : 'border-black/20 focus:border-black'
-                    } outline-none transition-colors`}
-                    placeholder="Project inquiry"
-                  />
-                </motion.div>
-                
-                <motion.div
-                  whileFocus={{ scale: 1.02 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <label htmlFor="message" className="block text-body-sm font-medium mb-2 opacity-70">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={6}
-                    className={`w-full px-0 py-3 text-body bg-transparent border-0 border-b-2 ${
-                      darkMode ? 'border-white/20 focus:border-white' : 'border-black/20 focus:border-black'
-                    } outline-none transition-colors resize-none`}
-                    placeholder="Tell us about your project..."
-                  />
-                </motion.div>
-                
-                <motion.button
-                  type="submit"
-                  className={`btn-primary ${
-                    darkMode 
-                      ? 'bg-white text-black hover:bg-white/90' 
-                      : 'bg-black text-white hover:bg-black/90'
-                  } transition-colors mt-8`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  Send Message
-                  <motion.span
-                    className="ml-2 inline-block"
-                    animate={{ x: [0, 3, 0] }}
-                    transition={{ 
-                      duration: 2, 
-                      ease: "easeInOut", 
-                      repeat: Infinity,
-                      repeatDelay: 3
-                    }}
+                  
+                  <motion.button
+                    type="submit"
+                    disabled={state.submitting}
+                    className={`btn-primary ${
+                      state.succeeded
+                        ? 'bg-green-500 text-white hover:bg-green-600'
+                        : darkMode 
+                          ? 'bg-white text-black hover:bg-white/90' 
+                          : 'bg-black text-white hover:bg-black/90'
+                    } transition-colors mt-8 disabled:opacity-50 disabled:cursor-not-allowed`}
+                    whileHover={!state.submitting ? { scale: 1.05 } : {}}
+                    whileTap={!state.submitting ? { scale: 0.95 } : {}}
+                    transition={{ duration: 0.2 }}
                   >
-                    <svg 
-                      className="w-5 h-5"
-                      fill="none" 
-                      stroke="currentColor" 
-                      viewBox="0 0 24 24"
+                    {state.submitting ? 'Sending...' : state.succeeded ? 'Message Sent!' : 'Send Message'}
+                                          {!state.submitting && !state.succeeded && (
+                      <motion.span
+                        className="ml-2 inline-block"
+                        animate={{ x: [0, 3, 0] }}
+                        transition={{ 
+                          duration: 2, 
+                          ease: "easeInOut", 
+                          repeat: Infinity,
+                          repeatDelay: 3
+                        }}
+                      >
+                        <svg 
+                          className="w-5 h-5"
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={2} 
+                            d="M5 12h14m-7-7l7 7-7 7" 
+                          />
+                        </svg>
+                      </motion.span>
+                    )}
+                  </motion.button>
+                  
+                  {state.errors && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-red-500 text-sm mt-4"
                     >
-                      <path 
-                        strokeLinecap="round" 
-                        strokeLinejoin="round" 
-                        strokeWidth={2} 
-                        d="M5 12h14m-7-7l7 7-7 7" 
-                      />
-                    </svg>
-                  </motion.span>
-                </motion.button>
-              </form>
+                      Please fix the errors above and try again.
+                    </motion.div>
+                  )}
+                </form>
             </motion.div>
           </div>
         </div>
